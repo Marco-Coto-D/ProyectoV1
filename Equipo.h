@@ -19,6 +19,7 @@ private:
     double prioridad; //De este atributo depende cual equipo recibe mantenimiento
     vector<*Incidencias> incidencias;
 public:
+    Equipo(string nombre, string ID, int criticidad, double prioridad);
     void degradar(); //Metodo para degradar el equipo por dia
     double calcularPrioridad();
     void aplicarMantenimiento();
