@@ -20,10 +20,21 @@ private:
     vector<*Incidencias> incidencias;
 public:
     Equipo(string nombre, string ID, int criticidad);
+    string getID();
+    double getEstado();
+    int getCriticidad();
+    int getTiempoInactivo();
+    double getPrioridad();
+    void setEstado(double estado);
+    void setCriticidad(int criticidad);
+    void setTiempoInactivo(int tiempoInactivo);
+    void setPrioridad(double prioridad);
     void degradar(); //Metodo para degradar el equipo por dia
     double calcularPrioridad();
     void aplicarMantenimiento();
     void agregarIncidencia(Incidencia*);
+    int gravedadIncidencias();
+    void mostrar();
 };
 
 
