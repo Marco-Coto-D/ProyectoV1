@@ -76,9 +76,16 @@ int Equipo::gravedadIncidencias(){
     return total;
 }
 
+void Equipo::limpiarIncidencias() {
+    for (Incidencia * inc : incidencias) {
+        delete inc;
+    }
+    incidencias.clear();
+}
+
 void Equipo::mostrar(){
     cout<<this->nombre<<endl;
     cout<<"ID: "<<this->ID<<endl;
-    cout<<"El estado actual del equipo es: "<<this->prioridad<<endl;
+    cout<<"El estado actual del equipo es: "<<this->estado<<endl;
     cout<<"Su ultimo uso fue hace: "<<this->tiempoInactivo<<" dias."<<endl;
 }

@@ -34,6 +34,7 @@ public:
     double calcularPrioridad();
     void agregarIncidencia(Incidencia*);
     int gravedadIncidencias();
+    void limpiarIncidencias();
     void mostrar();
 };
 
