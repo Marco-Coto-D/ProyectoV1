@@ -9,4 +9,8 @@ add_executable(ProyectoV1 main.cpp
         Incidencia.cpp
         Incidencia.h
         IncidenciaBaja.cpp
-        IncidenciaBaja.h)
+        IncidenciaBaja.h
+        IncidenciaMedia.cpp
+        IncidenciaMedia.h
+        IncidenciaAlta.cpp
+        IncidenciaAlta.h)

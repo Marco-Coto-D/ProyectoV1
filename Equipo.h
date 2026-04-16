@@ -7,7 +7,6 @@
 #include <iostream>
 using namespace std;
 #include <vector>
-#include "Incidencia.h"
 
 class Incidencia;
 
@@ -33,7 +32,6 @@ public:
     void setPrioridad(double prioridad);
     void degradar(); //Metodo para degradar el equipo por dia
     double calcularPrioridad();
-    void aplicarMantenimiento();
     void agregarIncidencia(Incidencia*);
     int gravedadIncidencias();
     void mostrar();

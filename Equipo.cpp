@@ -3,7 +3,7 @@
 //
 
 #include "Equipo.h"
-#include <ctime>
+#include "Incidencia.h"
 
 Equipo::Equipo(string nombre, string ID, int criticidad){
     this->nombre = nombre;
@@ -53,6 +53,9 @@ void Equipo::setPrioridad(double prioridad){
 void Equipo::degradar(){ //Desgaste el equipo aleatoriamemte diariamente
     double desgaste = rand() % 5 + 1;
     estado = estado - desgaste;
+    if (estado < 0 ) {
+        estado = 0;
+    }
     tiempoInactivo++;
 }
 
