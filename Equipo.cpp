@@ -68,7 +68,7 @@ int Equipo::gravedadIncidencias(){
     int total = 0;
     for(int i = 0; i < incidencias.size(); i++)
     {
-        total += incidencias[i]->calcularGravedad();
+        total += incidencias[i]->getGravedad();
     }
     return total;
 }

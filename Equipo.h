@@ -7,7 +7,9 @@
 #include <iostream>
 using namespace std;
 #include <vector>
+#include "Incidencia.h"
 
+class Incidencia;
 
 class Equipo {
 private:
@@ -17,7 +19,7 @@ private:
     int criticidad;
     int tiempoInactivo;
     double prioridad; //De este atributo depende cual equipo recibe mantenimiento
-    vector<*Incidencias> incidencias;
+    vector<Incidencia*> incidencias;
 public:
     Equipo(string nombre, string ID, int criticidad);
     string getID();

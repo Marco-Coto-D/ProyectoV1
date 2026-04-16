@@ -5,4 +5,8 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(ProyectoV1 main.cpp
         Equipo.cpp
-        Equipo.h)
+        Equipo.h
+        Incidencia.cpp
+        Incidencia.h
+        IncidenciaBaja.cpp
+        IncidenciaBaja.h)
