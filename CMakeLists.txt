@@ -14,5 +14,7 @@ add_executable(ProyectoV1 main.cpp
         IncidenciaMedia.h
         IncidenciaAlta.cpp
         IncidenciaAlta.h
-        Mantemiento.cpp
-        Mantemiento.h)
+        Mantenimiento.cpp
+        Mantenimiento.h
+        Sistema.cpp
+        Sistema.h)
