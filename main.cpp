@@ -1,10 +1,11 @@
 #include <iostream>
 #include <ctime>
-using namespace  std;
+#include "Sistema.h"
+using namespace std;
 
 int main() {
     srand(time(nullptr));
-    cout<<"Inicio del proyecto"<<endl;
-
+    Sistema sistema;
+    sistema.simular();
     return 0;
 }
