@@ -7,6 +7,8 @@
 #include "IncidenciaMedia.h"
 #include "IncidenciaBaja.h"
 #include <fstream>
+#include <iomanip>
+#include <sstream>
 
 // "cambiar pos"
 
@@ -75,6 +77,9 @@ Sistema::Sistema() {
 
     ifstream archivo("equipos.txt");
     if (!archivo.is_open()) {
+        archivo.open("../equipos.txt");
+    }
+    if (!archivo.is_open()) {
         cout << "Error: no se pudo abrir equipos.txt" << endl;
         return;
     }
@@ -116,14 +121,22 @@ Sistema::Sistema() {
 }
 
 void Sistema::simular() {
+    logDiario.open("simulacion_diaria.txt");
+    if (!logDiario.is_open()) {
+        cout << "Advertencia: no se pudo crear simulacion_diaria.txt" << endl;
+    }
     for (int i = 0; i < 30; i++) {
         simularDia();
     }
+    if (logDiario.is_open()) logDiario.close();
     generarReporte();
 }
 
 void Sistema::simularDia() {
-    cout << "\n========== DIA " << diaActual + 1 << " ==========" << endl;
+    int dia = diaActual + 1;
+
+    cout << "\nDia " << dia << endl;
+    if (logDiario.is_open()) logDiario << "\nDia " << dia << "\n";
 
     generarIncidencias();
 
@@ -134,12 +147,23 @@ void Sistema::simularDia() {
 
     ordenarEquipos();
 
+    // Top prioridad: los 3 equipos más urgentes
     cout << "Top prioridad: ";
-    for (int i = 0; i < 3 && i < (int)equipos.size(); i++) {
-        cout << equipos[i].getID() << " (" << equipos[i].getPrioridad() << ")";
-        if (i < 2 && i + 1 < (int)equipos.size()) cout << ", ";
+    if (logDiario.is_open()) logDiario << "Top prioridad: ";
+    int topN = 3 < (int)equipos.size() ? 3 : (int)equipos.size();
+    for (int i = 0; i < topN; i++) {
+        ostringstream oss;
+        oss << fixed << setprecision(3) << equipos[i].getPrioridad();
+        string entry = equipos[i].getID() + " (" + oss.str() + ")";
+        cout << entry;
+        if (logDiario.is_open()) logDiario << entry;
+        if (i < topN - 1) {
+            cout << ", ";
+            if (logDiario.is_open()) logDiario << ", ";
+        }
     }
     cout << endl;
+    if (logDiario.is_open()) logDiario << "\n";
 
     aplicarMantenimientos();
 
@@ -168,16 +192,27 @@ void Sistema::aplicarMantenimientos() {
     int total     = (int)equipos.size();
     int atendidos = total < 3 ? total : 3;
 
+    // Asignados
     cout << "Asignados: ";
+    if (logDiario.is_open()) logDiario << "Asignados: ";
     for (int i = 0; i < atendidos; i++) {
         cout << equipos[i].getID();
-        if (i < atendidos - 1) cout << ", ";
+        if (logDiario.is_open()) logDiario << equipos[i].getID();
+        if (i < atendidos - 1) {
+            cout << ", ";
+            if (logDiario.is_open()) logDiario << ", ";
+        }
         mantenimientos.aplicar(&equipos[i]);
     }
     cout << endl;
+    if (logDiario.is_open()) logDiario << "\n";
 
-    cout << "Backlog pendiente: " << total - atendidos << endl;
+    // Backlog pendiente: equipos sin atención en este día
+    int backlog = total - atendidos;
+    cout << "Backlog pendiente: " << backlog << endl;
+    if (logDiario.is_open()) logDiario << "Backlog pendiente: " << backlog << "\n";
 
+    // Riesgo global basado en prioridad promedio
     double sumaPrioridad = 0;
     for (int i = 0; i < total; i++) {
         sumaPrioridad += equipos[i].getPrioridad();
@@ -185,20 +220,17 @@ void Sistema::aplicarMantenimientos() {
     double riesgoPromedio = sumaPrioridad / total;
 
     string nivel;
-    if (riesgoPromedio >= 7)      nivel = "ALTO";
-    else if (riesgoPromedio >= 4) nivel = "MEDIO";
+    if (riesgoPromedio >= 8)      nivel = "ALTO";
+    else if (riesgoPromedio >= 5) nivel = "MEDIO";
     else                          nivel = "BAJO";
 
     cout << "Riesgo global: " << nivel << endl;
+    if (logDiario.is_open()) logDiario << "Riesgo global: " << nivel << "\n";
 }
 
 void Sistema::generarReporte() {
-    cout << "\n========== REPORTE FINAL - " << diaActual << " dias ==========" << endl;
-    for (int i = 0; i < (int)equipos.size(); i++) {
-        equipos[i].mostrar();
-        cout << "Prioridad final: " << equipos[i].getPrioridad() << endl;
-        cout << "----------------------------" << endl;
-    }
+    cout << "\nREPORTE FINAL - Simulacion de " << diaActual << " dias" << endl;
+    cout << "========================================" << endl;
 
     ofstream archivo("reporte_simulacion.txt");
     if (archivo.is_open()) {
@@ -213,6 +245,7 @@ void Sistema::generarReporte() {
             archivo << "----------------------------\n";
         }
         archivo.close();
-        cout << "Reporte guardado en reporte_simulacion.txt" << endl;
+        cout << "Reporte final guardado en reporte_simulacion.txt" << endl;
     }
+    cout << "Log diario guardado en simulacion_diaria.txt" << endl;
 }

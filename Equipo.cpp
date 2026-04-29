@@ -50,17 +50,16 @@ void Equipo::setPrioridad(double prioridad){
     this->prioridad = prioridad;
 }
 
-void Equipo::degradar(){ //Desgaste el equipo aleatoriamemte diariamente
+void Equipo::degradar(){
     double desgaste = rand() % 5 + 1;
-    estado = estado - desgaste;
-    if (estado < 0 ) {
-        estado = 0;
-    }
+    estado -= desgaste;
+    if (estado < 0) estado = 0;
     tiempoInactivo++;
 }
 
 double Equipo::calcularPrioridad(){
-    return prioridad = (criticidad * 0.5) + (gravedadIncidencias() * 0.3) + (tiempoInactivo * 0.2);
+    double incActivas = incidencias.empty() ? 0.0 : (double)gravedadIncidencias() / 5.0;
+    return prioridad = (criticidad * 0.5) + (incActivas * 0.3) + (tiempoInactivo * 0.2);
 }
 
 void Equipo::agregarIncidencia(Incidencia* inc){

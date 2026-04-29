@@ -5,6 +5,7 @@
 #ifndef PROYECTOV1_SISTEMA_H
 #define PROYECTOV1_SISTEMA_H
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include "Mantenimiento.h"
 #include "Incidencia.h"
@@ -17,6 +18,7 @@ private:
     vector<Equipo> equipos;
     int diaActual;
     Mantenimiento mantenimientos;
+    ofstream logDiario;
     public:
     Sistema();
     void simular();
