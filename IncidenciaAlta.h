@@ -2,13 +2,12 @@
 #define PROYECTOV1_INCIDENCIAALTA_H
 #include "Incidencia.h"
 
-
 class IncidenciaAlta : public Incidencia {
-    public:
+public:
     IncidenciaAlta();
     int getGravedad() const override;
     string getTipo() const override;
+    bool requiereParoInmediato() const { return true; }
 };
-
 
 #endif //PROYECTOV1_INCIDENCIAALTA_H

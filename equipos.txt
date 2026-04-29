@@ -1,0 +1,400 @@
+EQ-001; criticidad=2; estado=51
+EQ-002; criticidad=5; estado=65
+EQ-003; criticidad=4; estado=58
+EQ-004; criticidad=2; estado=93
+EQ-005; criticidad=9; estado=55
+EQ-006; criticidad=10; estado=77
+EQ-007; criticidad=1; estado=51
+EQ-008; criticidad=2; estado=63
+EQ-009; criticidad=4; estado=82
+EQ-010; criticidad=10; estado=51
+EQ-011; criticidad=9; estado=62
+EQ-012; criticidad=9; estado=76
+EQ-013; criticidad=4; estado=78
+EQ-014; criticidad=10; estado=67
+EQ-015; criticidad=1; estado=98
+EQ-016; criticidad=3; estado=94
+EQ-017; criticidad=7; estado=71
+EQ-018; criticidad=5; estado=59
+EQ-019; criticidad=4; estado=98
+EQ-020; criticidad=6; estado=56
+EQ-021; criticidad=2; estado=74
+EQ-022; criticidad=2; estado=72
+EQ-023; criticidad=6; estado=88
+EQ-024; criticidad=5; estado=52
+EQ-025; criticidad=8; estado=84
+EQ-026; criticidad=2; estado=74
+EQ-027; criticidad=2; estado=85
+EQ-028; criticidad=5; estado=90
+EQ-029; criticidad=10; estado=73
+EQ-030; criticidad=10; estado=62
+EQ-031; criticidad=2; estado=52
+EQ-032; criticidad=4; estado=99
+EQ-033; criticidad=5; estado=55
+EQ-034; criticidad=4; estado=56
+EQ-035; criticidad=7; estado=67
+EQ-036; criticidad=8; estado=90
+EQ-037; criticidad=6; estado=60
+EQ-038; criticidad=6; estado=72
+EQ-039; criticidad=4; estado=92
+EQ-040; criticidad=5; estado=94
+EQ-041; criticidad=2; estado=88
+EQ-042; criticidad=3; estado=84
+EQ-043; criticidad=4; estado=60
+EQ-044; criticidad=8; estado=74
+EQ-045; criticidad=5; estado=90
+EQ-046; criticidad=9; estado=64
+EQ-047; criticidad=6; estado=99
+EQ-048; criticidad=1; estado=64
+EQ-049; criticidad=1; estado=70
+EQ-050; criticidad=7; estado=67
+EQ-051; criticidad=2; estado=63
+EQ-052; criticidad=10; estado=95
+EQ-053; criticidad=6; estado=63
+EQ-054; criticidad=8; estado=75
+EQ-055; criticidad=8; estado=59
+EQ-056; criticidad=5; estado=58
+EQ-057; criticidad=4; estado=97
+EQ-058; criticidad=9; estado=84
+EQ-059; criticidad=5; estado=97
+EQ-060; criticidad=10; estado=77
+EQ-061; criticidad=10; estado=75
+EQ-062; criticidad=6; estado=64
+EQ-063; criticidad=3; estado=82
+EQ-064; criticidad=8; estado=55
+EQ-065; criticidad=1; estado=57
+EQ-066; criticidad=3; estado=90
+EQ-067; criticidad=3; estado=100
+EQ-068; criticidad=7; estado=88
+EQ-069; criticidad=2; estado=74
+EQ-070; criticidad=7; estado=88
+EQ-071; criticidad=8; estado=83
+EQ-072; criticidad=5; estado=85
+EQ-073; criticidad=1; estado=93
+EQ-074; criticidad=2; estado=93
+EQ-075; criticidad=9; estado=98
+EQ-076; criticidad=5; estado=99
+EQ-077; criticidad=6; estado=57
+EQ-078; criticidad=5; estado=77
+EQ-079; criticidad=3; estado=79
+EQ-080; criticidad=1; estado=96
+EQ-081; criticidad=5; estado=82
+EQ-082; criticidad=3; estado=82
+EQ-083; criticidad=2; estado=90
+EQ-084; criticidad=5; estado=90
+EQ-085; criticidad=9; estado=88
+EQ-086; criticidad=4; estado=59
+EQ-087; criticidad=6; estado=98
+EQ-088; criticidad=3; estado=84
+EQ-089; criticidad=9; estado=50
+EQ-090; criticidad=10; estado=70
+EQ-091; criticidad=8; estado=51
+EQ-092; criticidad=2; estado=73
+EQ-093; criticidad=5; estado=65
+EQ-094; criticidad=1; estado=65
+EQ-095; criticidad=10; estado=55
+EQ-096; criticidad=2; estado=96
+EQ-097; criticidad=8; estado=54
+EQ-098; criticidad=9; estado=99
+EQ-099; criticidad=3; estado=58
+EQ-100; criticidad=8; estado=85
+INC; EQ-022; severidad=MEDIA; dia=17
+INC; EQ-078; severidad=MEDIA; dia=7
+INC; EQ-070; severidad=BAJA; dia=23
+INC; EQ-026; severidad=BAJA; dia=10
+INC; EQ-052; severidad=BAJA; dia=21
+INC; EQ-048; severidad=MEDIA; dia=29
+INC; EQ-067; severidad=MEDIA; dia=4
+INC; EQ-032; severidad=ALTA; dia=3
+INC; EQ-044; severidad=ALTA; dia=19
+INC; EQ-071; severidad=ALTA; dia=19
+INC; EQ-029; severidad=ALTA; dia=3
+INC; EQ-091; severidad=BAJA; dia=2
+INC; EQ-030; severidad=ALTA; dia=29
+INC; EQ-005; severidad=MEDIA; dia=3
+INC; EQ-066; severidad=ALTA; dia=9
+INC; EQ-086; severidad=MEDIA; dia=7
+INC; EQ-070; severidad=ALTA; dia=24
+INC; EQ-074; severidad=BAJA; dia=16
+INC; EQ-032; severidad=MEDIA; dia=26
+INC; EQ-053; severidad=ALTA; dia=4
+INC; EQ-013; severidad=BAJA; dia=14
+INC; EQ-046; severidad=MEDIA; dia=14
+INC; EQ-060; severidad=BAJA; dia=2
+INC; EQ-087; severidad=BAJA; dia=21
+INC; EQ-013; severidad=ALTA; dia=13
+INC; EQ-094; severidad=MEDIA; dia=26
+INC; EQ-014; severidad=ALTA; dia=7
+INC; EQ-025; severidad=BAJA; dia=15
+INC; EQ-018; severidad=MEDIA; dia=6
+INC; EQ-036; severidad=MEDIA; dia=8
+INC; EQ-010; severidad=MEDIA; dia=26
+INC; EQ-071; severidad=ALTA; dia=2
+INC; EQ-084; severidad=BAJA; dia=27
+INC; EQ-002; severidad=ALTA; dia=30
+INC; EQ-097; severidad=ALTA; dia=6
+INC; EQ-053; severidad=MEDIA; dia=16
+INC; EQ-028; severidad=MEDIA; dia=29
+INC; EQ-008; severidad=ALTA; dia=13
+INC; EQ-001; severidad=MEDIA; dia=9
+INC; EQ-059; severidad=MEDIA; dia=14
+INC; EQ-090; severidad=BAJA; dia=26
+INC; EQ-072; severidad=BAJA; dia=23
+INC; EQ-063; severidad=ALTA; dia=7
+INC; EQ-038; severidad=ALTA; dia=2
+INC; EQ-075; severidad=BAJA; dia=18
+INC; EQ-008; severidad=BAJA; dia=11
+INC; EQ-008; severidad=ALTA; dia=19
+INC; EQ-062; severidad=BAJA; dia=30
+INC; EQ-068; severidad=ALTA; dia=2
+INC; EQ-066; severidad=ALTA; dia=28
+INC; EQ-024; severidad=ALTA; dia=20
+INC; EQ-009; severidad=BAJA; dia=28
+INC; EQ-031; severidad=MEDIA; dia=4
+INC; EQ-073; severidad=ALTA; dia=19
+INC; EQ-077; severidad=ALTA; dia=20
+INC; EQ-011; severidad=MEDIA; dia=22
+INC; EQ-075; severidad=BAJA; dia=17
+INC; EQ-041; severidad=MEDIA; dia=7
+INC; EQ-086; severidad=BAJA; dia=11
+INC; EQ-031; severidad=MEDIA; dia=13
+INC; EQ-017; severidad=BAJA; dia=21
+INC; EQ-039; severidad=MEDIA; dia=11
+INC; EQ-097; severidad=ALTA; dia=1
+INC; EQ-059; severidad=BAJA; dia=19
+INC; EQ-013; severidad=ALTA; dia=18
+INC; EQ-028; severidad=BAJA; dia=9
+INC; EQ-017; severidad=MEDIA; dia=29
+INC; EQ-009; severidad=ALTA; dia=12
+INC; EQ-037; severidad=ALTA; dia=15
+INC; EQ-070; severidad=BAJA; dia=10
+INC; EQ-079; severidad=BAJA; dia=17
+INC; EQ-002; severidad=BAJA; dia=27
+INC; EQ-071; severidad=MEDIA; dia=30
+INC; EQ-085; severidad=ALTA; dia=29
+INC; EQ-018; severidad=MEDIA; dia=4
+INC; EQ-014; severidad=BAJA; dia=18
+INC; EQ-020; severidad=MEDIA; dia=10
+INC; EQ-078; severidad=ALTA; dia=23
+INC; EQ-044; severidad=ALTA; dia=22
+INC; EQ-082; severidad=MEDIA; dia=17
+INC; EQ-063; severidad=MEDIA; dia=29
+INC; EQ-007; severidad=ALTA; dia=21
+INC; EQ-055; severidad=MEDIA; dia=2
+INC; EQ-001; severidad=MEDIA; dia=25
+INC; EQ-017; severidad=BAJA; dia=9
+INC; EQ-021; severidad=BAJA; dia=15
+INC; EQ-071; severidad=BAJA; dia=14
+INC; EQ-072; severidad=ALTA; dia=4
+INC; EQ-010; severidad=BAJA; dia=29
+INC; EQ-020; severidad=BAJA; dia=2
+INC; EQ-048; severidad=BAJA; dia=18
+INC; EQ-019; severidad=MEDIA; dia=5
+INC; EQ-006; severidad=MEDIA; dia=12
+INC; EQ-006; severidad=MEDIA; dia=7
+INC; EQ-088; severidad=ALTA; dia=22
+INC; EQ-014; severidad=MEDIA; dia=25
+INC; EQ-072; severidad=MEDIA; dia=20
+INC; EQ-096; severidad=ALTA; dia=30
+INC; EQ-031; severidad=ALTA; dia=26
+INC; EQ-023; severidad=MEDIA; dia=1
+INC; EQ-023; severidad=BAJA; dia=30
+INC; EQ-043; severidad=MEDIA; dia=26
+INC; EQ-086; severidad=BAJA; dia=26
+INC; EQ-032; severidad=MEDIA; dia=6
+INC; EQ-090; severidad=ALTA; dia=13
+INC; EQ-005; severidad=MEDIA; dia=8
+INC; EQ-026; severidad=MEDIA; dia=12
+INC; EQ-040; severidad=ALTA; dia=8
+INC; EQ-004; severidad=BAJA; dia=7
+INC; EQ-052; severidad=MEDIA; dia=9
+INC; EQ-009; severidad=MEDIA; dia=12
+INC; EQ-083; severidad=BAJA; dia=13
+INC; EQ-087; severidad=BAJA; dia=11
+INC; EQ-004; severidad=ALTA; dia=29
+INC; EQ-034; severidad=ALTA; dia=19
+INC; EQ-034; severidad=ALTA; dia=4
+INC; EQ-077; severidad=MEDIA; dia=12
+INC; EQ-094; severidad=MEDIA; dia=14
+INC; EQ-078; severidad=BAJA; dia=4
+INC; EQ-050; severidad=BAJA; dia=7
+INC; EQ-033; severidad=ALTA; dia=23
+INC; EQ-056; severidad=ALTA; dia=17
+INC; EQ-069; severidad=BAJA; dia=24
+INC; EQ-095; severidad=BAJA; dia=22
+INC; EQ-026; severidad=MEDIA; dia=14
+INC; EQ-009; severidad=BAJA; dia=30
+INC; EQ-043; severidad=BAJA; dia=11
+INC; EQ-085; severidad=ALTA; dia=24
+INC; EQ-039; severidad=BAJA; dia=10
+INC; EQ-086; severidad=MEDIA; dia=11
+INC; EQ-052; severidad=BAJA; dia=10
+INC; EQ-071; severidad=ALTA; dia=7
+INC; EQ-054; severidad=BAJA; dia=13
+INC; EQ-087; severidad=BAJA; dia=29
+INC; EQ-023; severidad=BAJA; dia=19
+INC; EQ-039; severidad=MEDIA; dia=18
+INC; EQ-001; severidad=MEDIA; dia=10
+INC; EQ-027; severidad=MEDIA; dia=26
+INC; EQ-075; severidad=BAJA; dia=21
+INC; EQ-042; severidad=MEDIA; dia=15
+INC; EQ-057; severidad=BAJA; dia=7
+INC; EQ-066; severidad=MEDIA; dia=26
+INC; EQ-095; severidad=ALTA; dia=22
+INC; EQ-011; severidad=MEDIA; dia=17
+INC; EQ-085; severidad=BAJA; dia=20
+INC; EQ-043; severidad=ALTA; dia=27
+INC; EQ-097; severidad=ALTA; dia=22
+INC; EQ-040; severidad=ALTA; dia=26
+INC; EQ-026; severidad=ALTA; dia=1
+INC; EQ-006; severidad=ALTA; dia=16
+INC; EQ-079; severidad=ALTA; dia=15
+INC; EQ-054; severidad=BAJA; dia=19
+INC; EQ-025; severidad=BAJA; dia=23
+INC; EQ-050; severidad=MEDIA; dia=13
+INC; EQ-032; severidad=ALTA; dia=21
+INC; EQ-089; severidad=ALTA; dia=29
+INC; EQ-097; severidad=ALTA; dia=25
+INC; EQ-055; severidad=ALTA; dia=6
+INC; EQ-090; severidad=BAJA; dia=15
+INC; EQ-007; severidad=BAJA; dia=8
+INC; EQ-016; severidad=MEDIA; dia=5
+INC; EQ-060; severidad=BAJA; dia=17
+INC; EQ-072; severidad=BAJA; dia=11
+INC; EQ-097; severidad=MEDIA; dia=20
+INC; EQ-093; severidad=BAJA; dia=14
+INC; EQ-071; severidad=MEDIA; dia=29
+INC; EQ-021; severidad=BAJA; dia=28
+INC; EQ-061; severidad=MEDIA; dia=9
+INC; EQ-097; severidad=ALTA; dia=27
+INC; EQ-082; severidad=MEDIA; dia=25
+INC; EQ-100; severidad=BAJA; dia=16
+INC; EQ-081; severidad=ALTA; dia=9
+INC; EQ-057; severidad=ALTA; dia=23
+INC; EQ-037; severidad=ALTA; dia=9
+INC; EQ-043; severidad=MEDIA; dia=29
+INC; EQ-070; severidad=ALTA; dia=5
+INC; EQ-020; severidad=ALTA; dia=13
+INC; EQ-089; severidad=ALTA; dia=23
+INC; EQ-028; severidad=ALTA; dia=14
+INC; EQ-053; severidad=MEDIA; dia=18
+INC; EQ-060; severidad=MEDIA; dia=2
+INC; EQ-027; severidad=MEDIA; dia=13
+INC; EQ-099; severidad=BAJA; dia=23
+INC; EQ-003; severidad=BAJA; dia=13
+INC; EQ-062; severidad=ALTA; dia=12
+INC; EQ-039; severidad=MEDIA; dia=28
+INC; EQ-054; severidad=BAJA; dia=24
+INC; EQ-095; severidad=BAJA; dia=26
+INC; EQ-078; severidad=ALTA; dia=16
+INC; EQ-029; severidad=MEDIA; dia=14
+INC; EQ-063; severidad=ALTA; dia=13
+INC; EQ-044; severidad=BAJA; dia=22
+INC; EQ-052; severidad=BAJA; dia=6
+INC; EQ-060; severidad=ALTA; dia=20
+INC; EQ-069; severidad=ALTA; dia=30
+INC; EQ-051; severidad=BAJA; dia=19
+INC; EQ-085; severidad=ALTA; dia=3
+INC; EQ-083; severidad=MEDIA; dia=5
+INC; EQ-060; severidad=ALTA; dia=2
+INC; EQ-034; severidad=MEDIA; dia=11
+INC; EQ-028; severidad=MEDIA; dia=11
+INC; EQ-044; severidad=MEDIA; dia=9
+INC; EQ-097; severidad=MEDIA; dia=9
+INC; EQ-011; severidad=MEDIA; dia=1
+INC; EQ-096; severidad=BAJA; dia=2
+INC; EQ-045; severidad=ALTA; dia=21
+INC; EQ-009; severidad=BAJA; dia=2
+INC; EQ-097; severidad=ALTA; dia=8
+INC; EQ-026; severidad=ALTA; dia=20
+INC; EQ-020; severidad=ALTA; dia=5
+INC; EQ-061; severidad=BAJA; dia=4
+INC; EQ-073; severidad=ALTA; dia=15
+INC; EQ-090; severidad=MEDIA; dia=25
+INC; EQ-048; severidad=ALTA; dia=20
+INC; EQ-078; severidad=BAJA; dia=23
+INC; EQ-015; severidad=ALTA; dia=10
+INC; EQ-014; severidad=BAJA; dia=1
+INC; EQ-040; severidad=BAJA; dia=22
+INC; EQ-049; severidad=MEDIA; dia=23
+INC; EQ-026; severidad=ALTA; dia=19
+INC; EQ-089; severidad=BAJA; dia=8
+INC; EQ-014; severidad=BAJA; dia=25
+INC; EQ-039; severidad=BAJA; dia=20
+INC; EQ-016; severidad=BAJA; dia=26
+INC; EQ-006; severidad=MEDIA; dia=18
+INC; EQ-055; severidad=BAJA; dia=12
+INC; EQ-009; severidad=BAJA; dia=21
+INC; EQ-044; severidad=ALTA; dia=28
+INC; EQ-054; severidad=MEDIA; dia=4
+INC; EQ-056; severidad=MEDIA; dia=21
+INC; EQ-059; severidad=BAJA; dia=5
+INC; EQ-056; severidad=ALTA; dia=24
+INC; EQ-067; severidad=BAJA; dia=9
+INC; EQ-079; severidad=BAJA; dia=25
+INC; EQ-062; severidad=MEDIA; dia=14
+INC; EQ-094; severidad=BAJA; dia=9
+INC; EQ-042; severidad=ALTA; dia=27
+INC; EQ-012; severidad=MEDIA; dia=29
+INC; EQ-058; severidad=ALTA; dia=25
+INC; EQ-060; severidad=BAJA; dia=20
+INC; EQ-086; severidad=MEDIA; dia=11
+INC; EQ-004; severidad=MEDIA; dia=28
+INC; EQ-042; severidad=ALTA; dia=16
+INC; EQ-028; severidad=MEDIA; dia=26
+INC; EQ-034; severidad=MEDIA; dia=9
+INC; EQ-077; severidad=BAJA; dia=29
+INC; EQ-036; severidad=BAJA; dia=1
+INC; EQ-067; severidad=ALTA; dia=3
+INC; EQ-031; severidad=BAJA; dia=14
+INC; EQ-063; severidad=BAJA; dia=25
+INC; EQ-031; severidad=BAJA; dia=16
+INC; EQ-083; severidad=BAJA; dia=16
+INC; EQ-058; severidad=ALTA; dia=3
+INC; EQ-038; severidad=ALTA; dia=13
+INC; EQ-089; severidad=ALTA; dia=10
+INC; EQ-085; severidad=BAJA; dia=12
+INC; EQ-061; severidad=BAJA; dia=17
+INC; EQ-045; severidad=MEDIA; dia=24
+INC; EQ-071; severidad=MEDIA; dia=12
+INC; EQ-090; severidad=MEDIA; dia=9
+INC; EQ-040; severidad=MEDIA; dia=8
+INC; EQ-016; severidad=BAJA; dia=7
+INC; EQ-041; severidad=ALTA; dia=24
+INC; EQ-069; severidad=BAJA; dia=6
+INC; EQ-025; severidad=ALTA; dia=24
+INC; EQ-062; severidad=MEDIA; dia=24
+INC; EQ-076; severidad=BAJA; dia=20
+INC; EQ-037; severidad=ALTA; dia=27
+INC; EQ-025; severidad=MEDIA; dia=8
+INC; EQ-047; severidad=ALTA; dia=10
+INC; EQ-002; severidad=BAJA; dia=18
+INC; EQ-017; severidad=MEDIA; dia=2
+INC; EQ-007; severidad=BAJA; dia=10
+INC; EQ-090; severidad=ALTA; dia=21
+INC; EQ-097; severidad=MEDIA; dia=4
+INC; EQ-002; severidad=BAJA; dia=10
+INC; EQ-061; severidad=MEDIA; dia=15
+INC; EQ-044; severidad=ALTA; dia=2
+INC; EQ-033; severidad=MEDIA; dia=4
+INC; EQ-009; severidad=MEDIA; dia=16
+INC; EQ-010; severidad=BAJA; dia=21
+INC; EQ-088; severidad=ALTA; dia=5
+INC; EQ-020; severidad=BAJA; dia=10
+INC; EQ-011; severidad=ALTA; dia=4
+INC; EQ-072; severidad=MEDIA; dia=20
+INC; EQ-077; severidad=BAJA; dia=8
+INC; EQ-100; severidad=BAJA; dia=13
+INC; EQ-058; severidad=MEDIA; dia=10
+INC; EQ-076; severidad=MEDIA; dia=10
+INC; EQ-073; severidad=BAJA; dia=2
+INC; EQ-079; severidad=BAJA; dia=4
+INC; EQ-098; severidad=ALTA; dia=21
+INC; EQ-028; severidad=MEDIA; dia=22
+INC; EQ-011; severidad=ALTA; dia=8
+INC; EQ-023; severidad=BAJA; dia=3
+INC; EQ-021; severidad=ALTA; dia=14
+INC; EQ-058; severidad=BAJA; dia=20
+INC; EQ-061; severidad=MEDIA; dia=2
+INC; EQ-030; severidad=MEDIA; dia=23
+INC; EQ-037; severidad=BAJA; dia=28

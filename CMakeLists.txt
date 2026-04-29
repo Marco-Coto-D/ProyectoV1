@@ -1,7 +1,7 @@
-cmake_minimum_required(VERSION 4.1)
+cmake_minimum_required(VERSION 3.20)
 project(ProyectoV1)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 add_executable(ProyectoV1 main.cpp
         Equipo.cpp
@@ -14,8 +14,14 @@ add_executable(ProyectoV1 main.cpp
         IncidenciaMedia.h
         IncidenciaAlta.cpp
         IncidenciaAlta.h
+        Excepciones.h
         Mantenimiento.cpp
         Mantenimiento.h
+        MantenimientoCorrectivo.cpp
+        MantenimientoCorrectivo.h
+        MantenimientoPreventivo.cpp
+        MantenimientoPreventivo.h
+        MantenimientoPredictivo.cpp
+        MantenimientoPredictivo.h
         Sistema.cpp
         Sistema.h)
-

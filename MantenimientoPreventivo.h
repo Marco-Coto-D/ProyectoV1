@@ -1,0 +1,13 @@
+#ifndef PROYECTOV1_MANTENIMIENTOPREVENTIVO_H
+#define PROYECTOV1_MANTENIMIENTOPREVENTIVO_H
+#include "Mantenimiento.h"
+
+class MantenimientoPreventivo : public Mantenimiento {
+public:
+    void aplicar(Equipo* equipo) override;
+    string getTipo() const override {
+        return "Preventivo";
+    }
+};
+
+#endif //PROYECTOV1_MANTENIMIENTOPREVENTIVO_H
