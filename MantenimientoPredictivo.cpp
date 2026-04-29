@@ -1,4 +1,6 @@
 #include "MantenimientoPredictivo.h"
+#include <iostream>
+using namespace std;
 
 void MantenimientoPredictivo::aplicar(Equipo* equipo) {
     double nuevoEstado = equipo->getEstado() + 15.0;

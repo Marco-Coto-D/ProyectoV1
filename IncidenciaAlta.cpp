@@ -1,4 +1,6 @@
 #include "IncidenciaAlta.h"
+#include <iostream>
+using namespace std;
 
 IncidenciaAlta::IncidenciaAlta(){
 }

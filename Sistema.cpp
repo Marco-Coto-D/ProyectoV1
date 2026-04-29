@@ -1,223 +1,223 @@
 #include "Sistema.h"
-#include "IncidenciaAlta.h"   // AGREGADO (Paso 3): necesario para dynamic_cast<IncidenciaAlta*>
+#include "IncidenciaAlta.h"
 #include "IncidenciaMedia.h"
 #include "IncidenciaBaja.h"
-#include "Excepciones.h"      // AGREGADO (Paso 1): excepciones personalizadas
+#include "Excepciones.h"
 #include <fstream>
+#include <iostream>
+using namespace std;
 
-// ── Formateo de doubles sin <iomanip> ni <sstream> ──────────────────────────
-// MODIFICADO (Paso 9): función propia para mostrar doubles con N decimales fijos
-static string formatearDouble(double valor, int decimales) {
-    int multiplicador = 1;
-    for (int i = 0; i < decimales; i++) multiplicador *= 10;
-    long long parteEntera  = (long long)valor;
-    int parteDecimal = (int)((valor - (double)parteEntera) * multiplicador + 0.5); // redondeo
-    if (parteDecimal >= multiplicador) { parteEntera++; parteDecimal = 0; }         // acarreo (ej: 9.9995 → 10.000)
-    string decimalesTexto = to_string(parteDecimal);
-    while ((int)decimalesTexto.size() < decimales) decimalesTexto = "0" + decimalesTexto; // rellena ceros
-    return to_string(parteEntera) + "." + decimalesTexto;
+// Convierte un numero decimal a texto con 1 o 2 decimales.
+// snprintf escribe el numero formateado en un arreglo de chars,
+// luego string(buffer) lo convierte a string para poder concatenarlo.
+string formatearDouble(double valor, int decimales) {
+    char buffer[50];
+    if (decimales == 1) {
+        snprintf(buffer, sizeof(buffer), "%.1f", valor);
+    } else {
+        snprintf(buffer, sizeof(buffer), "%.2f", valor);
+    }
+    return string(buffer);
 }
 
-// ── QuickSort propio (algoritmo obligatorio §7) ──────────────────────────────
+// ----- QuickSort para ordenar equipos de mayor a menor prioridad -----
 
-// MODIFICADO (Paso 6/9): usa swap campo por campo en vez de copia temporal — evita aliasing de punteros
-static void intercambiar(vector<Equipo>& lista, int posA, int posB) {
-    lista[posA].swap(lista[posB]); // llama al swap propio de Equipo, sin librerías externas
+void intercambiar(vector<Equipo>& lista, int a, int b) {
+    lista[a].swap(lista[b]);
 }
 
-static int particion(vector<Equipo>& lista, int izquierda, int derecha) {
-    double pivote = lista[derecha].getPrioridad();
-    int indiceMenor = izquierda - 1;
-    for (int posActual = izquierda; posActual < derecha; posActual++) {
-        if (lista[posActual].getPrioridad() >= pivote) {
-            indiceMenor++;
-            intercambiar(lista, indiceMenor, posActual);
+int particion(vector<Equipo>& lista, int izq, int der) {
+    double pivote = lista[der].getPrioridad();
+    int menor = izq - 1;
+    for (int i = izq; i < der; i++) {
+        if (lista[i].getPrioridad() >= pivote) {
+            menor++;
+            intercambiar(lista, menor, i);
         }
     }
-    intercambiar(lista, indiceMenor + 1, derecha);
-    return indiceMenor + 1;
+    intercambiar(lista, menor + 1, der);
+    return menor + 1;
 }
 
-static void quickSort(vector<Equipo>& lista, int izquierda, int derecha) {
-    if (izquierda >= derecha) return;
-    int indicePivote = particion(lista, izquierda, derecha);
-    quickSort(lista, izquierda, indicePivote - 1);
-    quickSort(lista, indicePivote + 1, derecha);
+void quickSort(vector<Equipo>& lista, int izq, int der) {
+    if (izq >= der) return;
+    int p = particion(lista, izq, der);
+    quickSort(lista, izq, p - 1);
+    quickSort(lista, p + 1, der);
 }
 
-// ── Helpers de parseo ────────────────────────────────────────────────────────
+// ----- Funciones para leer el archivo equipos.txt -----
 
-static string getCampo(const string& linea, int numeroCampo) {
-    int contadorCampos = 0, posicionInicio = 0;
+// Retorna el campo numero N de una linea separada por ";"
+string getCampo(string linea, int campo) {
+    int inicio = 0, c = 0;
     for (int i = 0; i <= (int)linea.size(); i++) {
         if (i == (int)linea.size() || linea[i] == ';') {
-            if (contadorCampos == numeroCampo) {
-                string resultado = linea.substr(posicionInicio, i - posicionInicio);
-                int posIzquierda = 0;
-                while (posIzquierda < (int)resultado.size() && resultado[posIzquierda] == ' ') posIzquierda++;
-                int posDerecha = (int)resultado.size() - 1;
-                while (posDerecha > posIzquierda && resultado[posDerecha] == ' ') posDerecha--;
-                return resultado.substr(posIzquierda, posDerecha - posIzquierda + 1);
+            if (c == campo) {
+                string res = linea.substr(inicio, i - inicio);
+                // quitar espacios al inicio
+                int ini = 0;
+                while (ini < (int)res.size() && res[ini] == ' ') ini++;
+                // quitar espacios al final
+                int fin = (int)res.size() - 1;
+                while (fin > ini && res[fin] == ' ') fin--;
+                return res.substr(ini, fin - ini + 1);
             }
-            contadorCampos++;
-            posicionInicio = i + 1;
+            c++;
+            inicio = i + 1;
         }
     }
     return "";
 }
 
-static string getValor(const string& campo) {
-    size_t posigualSign = campo.find('=');
-    if (posigualSign == string::npos) return "";
-    return campo.substr(posigualSign + 1);
+// Retorna el valor despues del "=" en un campo del tipo "clave=valor"
+string getValor(string campo) {
+    for (int i = 0; i < (int)campo.size(); i++) {
+        if (campo[i] == '=') {
+            return campo.substr(i + 1);
+        }
+    }
+    return "";
 }
 
-// ── Helper: escribe en consola y en archivo simultáneamente ─────────────────
+// ----- Escribe en pantalla y en el archivo de log al mismo tiempo -----
 
-void Sistema::escribir(const string& texto) {
+void Sistema::escribir(string texto) {
     cout << texto;
     if (logDiario.is_open()) logDiario << texto;
 }
 
-// ── Constructor ──────────────────────────────────────────────────────────────
+// ----- Constructor: carga los equipos e incidencias desde el archivo -----
 
 Sistema::Sistema() {
     diaActual = 0;
-    totalCorrectivos = 0;        // AGREGADO (Paso 8): contadores iniciales
+    totalCorrectivos = 0;
     totalPreventivos = 0;
     totalPredictivos = 0;
     totalIncidenciasGeneradas = 0;
     sumaRiesgoGlobal = 0.0;
 
-    // MODIFICADO (Paso 1): lanza ArchivoInvalidoException en lugar de imprimir y continuar
-    ifstream archivoEntrada("equipos.txt");
-    if (!archivoEntrada.is_open()) {
-        archivoEntrada.open("../equipos.txt"); // fallback para CLion (ejecuta desde cmake-build-debug)
+    ifstream archivo("equipos.txt");
+    if (!archivo.is_open()) {
+        archivo.open("../equipos.txt");
     }
-    if (!archivoEntrada.is_open()) {
-        throw ArchivoInvalidoException("equipos.txt no encontrado en directorio actual ni en ../");
+    if (!archivo.is_open()) {
+        throw ArchivoInvalidoException("equipos.txt no encontrado");
     }
 
     string linea;
-    int numeroLinea = 0;
-    while (getline(archivoEntrada, linea)) {
-        numeroLinea++;
+    int numLinea = 0;
+    while (getline(archivo, linea)) {
+        numLinea++;
         if (linea.empty()) continue;
 
-        string primerCampo = getCampo(linea, 0);
+        string primero = getCampo(linea, 0);
 
-        if (primerCampo == "INC") {
-            // MODIFICADO (Paso 7): las INC se guardan con su día, no se aplican de inmediato
+        if (primero == "INC") {
             string idEquipo  = getCampo(linea, 1);
             string severidad = getValor(getCampo(linea, 2));
             string diaTexto  = getValor(getCampo(linea, 3));
 
-            // MODIFICADO (Paso 1): valida que los campos no estén vacíos
             if (idEquipo.empty() || severidad.empty() || diaTexto.empty()) {
-                throw FormatoInvalidoException("linea " + to_string(numeroLinea) + " INC incompleta: " + linea);
+                throw FormatoInvalidoException("linea " + to_string(numLinea) + " INC incompleta: " + linea);
             }
 
-            int diaActivacion = 0;
+            int dia = 0;
             try {
-                diaActivacion = stoi(diaTexto); // MODIFICADO (Paso 1): captura stoi y relanza
+                dia = stoi(diaTexto);
             } catch (...) {
-                throw FormatoInvalidoException("linea " + to_string(numeroLinea) + " dia no es numero: " + diaTexto);
+                throw FormatoInvalidoException("linea " + to_string(numLinea) + " dia no es numero: " + diaTexto);
             }
 
-            // AGREGADO (Paso 7): guardar en cola pendiente, se aplica al llegar su día
-            IncidenciaPendiente pendiente;
-            pendiente.idEquipo      = idEquipo;
-            pendiente.severidad     = severidad;
-            pendiente.diaActivacion = diaActivacion;
-            incidenciasPendientes.push_back(pendiente);
+            IncidenciaPendiente p;
+            p.idEquipo      = idEquipo;
+            p.severidad     = severidad;
+            p.diaActivacion = dia;
+            incidenciasPendientes.push_back(p);
 
         } else {
-            // Línea de equipo: EQ-001; criticidad=9; estado=70
-            string identificador = primerCampo;
-            string campoCriticidad = getCampo(linea, 1);
-            string campoEstado     = getCampo(linea, 2);
+            string id          = primero;
+            string campoCrit   = getCampo(linea, 1);
+            string campoEstado = getCampo(linea, 2);
 
-            // MODIFICADO (Paso 1): valida campos antes de stoi/stod
-            if (identificador.empty() || campoCriticidad.empty() || campoEstado.empty()) {
-                throw FormatoInvalidoException("linea " + to_string(numeroLinea) + " equipo incompleto: " + linea);
+            if (id.empty() || campoCrit.empty() || campoEstado.empty()) {
+                throw FormatoInvalidoException("linea " + to_string(numLinea) + " equipo incompleto: " + linea);
             }
 
             int    criticidad = 0;
             double estado     = 0;
             try {
-                criticidad = stoi(getValor(campoCriticidad));
+                criticidad = stoi(getValor(campoCrit));
                 estado     = stod(getValor(campoEstado));
             } catch (...) {
-                throw FormatoInvalidoException("linea " + to_string(numeroLinea) + " valor no numerico: " + linea);
+                throw FormatoInvalidoException("linea " + to_string(numLinea) + " valor no numerico: " + linea);
             }
 
-            Equipo equipo(identificador, identificador, criticidad);
-            equipo.setEstado(estado);
-            equipos.push_back(equipo); // incidencias están vacías aquí, la copia superficial es segura
+            Equipo eq(id, id, criticidad);
+            eq.setEstado(estado);
+            equipos.push_back(eq);
         }
     }
-    archivoEntrada.close();
+    archivo.close();
     cout << equipos.size() << " equipos cargados." << endl;
 
-    // AGREGADO (Paso 4): construir índice de posiciones para búsqueda binaria O(log n)
-    // Justificación: con 100 equipos y 300 INC — búsqueda binaria ~2100 comparaciones vs ~30000 lineal
+    // Construir indice de posiciones para la busqueda binaria
     for (int i = 0; i < (int)equipos.size(); i++) {
         equiposOrdenadosPorId.push_back(i);
     }
-    // MODIFICADO (Paso 9): bubble sort propio en lugar de std::sort — sin <algorithm>
-    int cantidadEquipos = (int)equiposOrdenadosPorId.size();
-    for (int i = 0; i < cantidadEquipos - 1; i++) {
-        for (int j = 0; j < cantidadEquipos - 1 - i; j++) {
+    ordenarIndice();
+}
+
+// ----- Ordena el indice de IDs con bubble sort -----
+
+void Sistema::ordenarIndice() {
+    int n = (int)equiposOrdenadosPorId.size();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
             if (equipos[equiposOrdenadosPorId[j]].getID() > equipos[equiposOrdenadosPorId[j+1]].getID()) {
-                int temporal = equiposOrdenadosPorId[j];
+                int tmp = equiposOrdenadosPorId[j];
                 equiposOrdenadosPorId[j]   = equiposOrdenadosPorId[j+1];
-                equiposOrdenadosPorId[j+1] = temporal;
+                equiposOrdenadosPorId[j+1] = tmp;
             }
         }
     }
 }
 
-// ── Búsqueda binaria propia O(log n) (§7) ────────────────────────────────────
+// ----- Busqueda binaria: busca un equipo por ID en el indice ordenado -----
 
-// AGREGADO (Paso 4): busca un equipo por ID en el índice ordenado
-int Sistema::buscarEquipoBinaria(const string& identificador) const {
-    int izquierda = 0, derecha = (int)equiposOrdenadosPorId.size() - 1;
-    while (izquierda <= derecha) {
-        int medio = izquierda + (derecha - izquierda) / 2;
-        const string& idMedio = equipos[equiposOrdenadosPorId[medio]].getID();
-        if (idMedio == identificador) return equiposOrdenadosPorId[medio]; // retorna índice en equipos[]
-        if (idMedio < identificador)  izquierda = medio + 1;
-        else                          derecha   = medio - 1;
+int Sistema::buscarEquipo(string id) {
+    int izq = 0, der = (int)equiposOrdenadosPorId.size() - 1;
+    while (izq <= der) {
+        int med = (izq + der) / 2;
+        string idMed = equipos[equiposOrdenadosPorId[med]].getID();
+        if (idMed == id) return equiposOrdenadosPorId[med];
+        if (idMed < id) izq = med + 1;
+        else            der = med - 1;
     }
-    return -1; // no encontrado
+    return -1;
 }
 
-// ── Selección de estrategia (Strategy + dynamic_cast) ────────────────────────
+// ----- Patron Strategy: decide que tipo de mantenimiento aplicar -----
 
-// AGREGADO (Paso 2/3): decide qué tipo de mantenimiento aplicar según el estado del equipo
-// Usa dynamic_cast para detectar IncidenciaAlta con requiereParoInmediato() (§8.2)
 Mantenimiento* Sistema::seleccionarEstrategia(Equipo& equipo) {
-    // AGREGADO (Paso 3): downcasting seguro — accede a comportamiento exclusivo de IncidenciaAlta
-    const vector<Incidencia*>& listaIncidencias = equipo.getIncidencias();
-    for (int i = 0; i < (int)listaIncidencias.size(); i++) {
-        IncidenciaAlta* incidenciaAlta = dynamic_cast<IncidenciaAlta*>(listaIncidencias[i]); // retorna nullptr si no es IncidenciaAlta
-        if (incidenciaAlta != nullptr && incidenciaAlta->requiereParoInmediato()) {
-            return &correctivo; // paro inmediato → mantenimiento correctivo forzoso
+    // Downcasting seguro: verifica si hay una IncidenciaAlta con paro inmediato
+    const vector<Incidencia*>& lista = equipo.getIncidencias();
+    for (int i = 0; i < (int)lista.size(); i++) {
+        IncidenciaAlta* alta = dynamic_cast<IncidenciaAlta*>(lista[i]);
+        if (alta != nullptr && alta->requiereParoInmediato()) {
+            return &correctivo;
         }
     }
-    // Correctivo si el equipo está muy degradado o tiene muchas incidencias graves
     if (equipo.getEstado() < 40.0 || equipo.gravedadIncidencias() >= 10) {
         return &correctivo;
     }
-    // Predictivo si tiene varias incidencias pero sin paro inmediato
     if ((int)equipo.getIncidencias().size() >= 3) {
         return &predictivo;
     }
-    // Preventivo para mantenimiento de rutina
     return &preventivo;
 }
 
-// ── Simulación ───────────────────────────────────────────────────────────────
+// ----- Simulacion de 30 dias -----
 
 void Sistema::simular() {
     logDiario.open("simulacion_diaria.txt");
@@ -232,80 +232,85 @@ void Sistema::simular() {
 }
 
 void Sistema::simularDia() {
-    int diaSimulacion = diaActual + 1;
+    int dia = diaActual + 1;
 
-    escribir("\nDia " + to_string(diaSimulacion) + "\n");
+    escribir("\nDia " + to_string(dia) + "\n");
 
-    aplicarIncidenciasPendientes(); // AGREGADO (Paso 7): activa las INC del archivo cuyo día llegó
-    generarIncidencias();
-
+    // Paso 1: todos los equipos se degradan
     for (int i = 0; i < (int)equipos.size(); i++) {
         equipos[i].degradar();
+    }
+
+    // Paso 2: se activan las incidencias del archivo y se generan incidencias aleatorias
+    aplicarIncidenciasPendientes();
+    generarIncidencias();
+
+    // Paso 3: se calcula la prioridad de cada equipo
+    for (int i = 0; i < (int)equipos.size(); i++) {
         equipos[i].calcularPrioridad();
     }
 
+    // Paso 4: se ordenan los equipos de mayor a menor prioridad
     ordenarEquipos();
 
-    // Top prioridad: los 3 equipos más urgentes
-    int cantidadTop = 3 < (int)equipos.size() ? 3 : (int)equipos.size();
+    // Mostrar los 3 equipos mas urgentes
+    int top = 3 < (int)equipos.size() ? 3 : (int)equipos.size();
     string lineaTop = "Top prioridad: ";
-    for (int i = 0; i < cantidadTop; i++) {
-        lineaTop += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 3) + ")";
-        if (i < cantidadTop - 1) lineaTop += ", ";
+    for (int i = 0; i < top; i++) {
+        lineaTop += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 2) + ")";
+        if (i < top - 1) lineaTop += ", ";
     }
     escribir(lineaTop + "\n");
 
+    // Pasos 5-8: seleccion, mantenimiento, actualizacion global y registro
     aplicarMantenimientos();
 
     diaActual++;
 }
 
-// AGREGADO (Paso 7): aplica las incidencias del archivo cuyo diaActivacion == día actual
+// Activa las incidencias del archivo cuando llega su dia
 void Sistema::aplicarIncidenciasPendientes() {
-    // MODIFICADO (Paso 4): reconstruir índice — quickSort del día anterior reubicó los objetos
+    // Reconstruir el indice porque el quickSort reordeno el vector
     for (int i = 0; i < (int)equipos.size(); i++) equiposOrdenadosPorId[i] = i;
-
-    // MODIFICADO (Paso 9): bubble sort propio para reordenar el índice por ID
-    int cantidadEquipos = (int)equiposOrdenadosPorId.size();
-    for (int i = 0; i < cantidadEquipos - 1; i++) {
-        for (int j = 0; j < cantidadEquipos - 1 - i; j++) {
-            if (equipos[equiposOrdenadosPorId[j]].getID() > equipos[equiposOrdenadosPorId[j+1]].getID()) {
-                int temporal = equiposOrdenadosPorId[j];
-                equiposOrdenadosPorId[j]   = equiposOrdenadosPorId[j+1];
-                equiposOrdenadosPorId[j+1] = temporal;
-            }
-        }
-    }
+    ordenarIndice();
 
     for (int i = 0; i < (int)incidenciasPendientes.size(); i++) {
-        IncidenciaPendiente& pendiente = incidenciasPendientes[i];
-        if (pendiente.diaActivacion != diaActual + 1) continue;
+        IncidenciaPendiente& p = incidenciasPendientes[i];
+        if (p.diaActivacion != diaActual + 1) continue;
 
-        // MODIFICADO (Paso 4): búsqueda binaria O(log n) en lugar de recorrido lineal O(n)
-        int indice = buscarEquipoBinaria(pendiente.idEquipo);
+        int indice = buscarEquipo(p.idEquipo);
         if (indice == -1) {
-            throw OperacionInconsistenteException( // MODIFICADO (Paso 1): lanza excepción
-                "INC referencia equipo inexistente: " + pendiente.idEquipo);
+            throw OperacionInconsistenteException("INC referencia equipo inexistente: " + p.idEquipo);
         }
 
-        Incidencia* nuevaIncidencia = nullptr;
-        if      (pendiente.severidad == "ALTA")  nuevaIncidencia = new IncidenciaAlta();
-        else if (pendiente.severidad == "MEDIA") nuevaIncidencia = new IncidenciaMedia();
-        else                                     nuevaIncidencia = new IncidenciaBaja();
-        equipos[indice].agregarIncidencia(nuevaIncidencia);
+        Incidencia* nueva = nullptr;
+        if (p.severidad == "ALTA") {
+            nueva = new IncidenciaAlta();
+        } else if (p.severidad == "MEDIA") {
+            nueva = new IncidenciaMedia();
+        } else {
+            nueva = new IncidenciaBaja();
+        }
+        equipos[indice].agregarIncidencia(nueva);
+        // dependencia mutua: la incidencia sabe a que equipo pertenece
+        escribir("  INC " + nueva->getTipo() + " activada en " + nueva->getEquipo()->getID() + "\n");
     }
 }
 
 void Sistema::generarIncidencias() {
     for (int i = 0; i < (int)equipos.size(); i++) {
         if (rand() % 100 < 40) {
-            int tipoAleatorio = rand() % 3;
-            Incidencia* nuevaIncidencia = nullptr;
-            if      (tipoAleatorio == 0) nuevaIncidencia = new IncidenciaAlta();
-            else if (tipoAleatorio == 1) nuevaIncidencia = new IncidenciaMedia();
-            else                         nuevaIncidencia = new IncidenciaBaja();
-            equipos[i].agregarIncidencia(nuevaIncidencia);
-            totalIncidenciasGeneradas++; // AGREGADO (Paso 8): acumula para el reporte final
+            int tipo = rand() % 3;
+            Incidencia* nueva = nullptr;
+            if (tipo == 0) {
+                nueva = new IncidenciaAlta();
+            } else if (tipo == 1) {
+                nueva = new IncidenciaMedia();
+            } else {
+                nueva = new IncidenciaBaja();
+            }
+            equipos[i].agregarIncidencia(nueva);
+            totalIncidenciasGeneradas++;
         }
     }
 }
@@ -316,114 +321,114 @@ void Sistema::ordenarEquipos() {
 }
 
 void Sistema::aplicarMantenimientos() {
-    int totalEquipos = (int)equipos.size();
-    int atendidos    = totalEquipos < 3 ? totalEquipos : 3;
+    int total    = (int)equipos.size();
+    int atendidos = total < 3 ? total : 3;
 
-    // Asignados con tipo — MODIFICADO (Paso 2): muestra la estrategia elegida por equipo
     string lineaAsignados = "Asignados: ";
     for (int i = 0; i < atendidos; i++) {
-        Mantenimiento* estrategia = seleccionarEstrategia(equipos[i]); // AGREGADO (Paso 2/3)
+        Mantenimiento* estrategia = seleccionarEstrategia(equipos[i]);
 
-        // AGREGADO (Paso 8): conteo por tipo para el reporte final
-        if      (estrategia->getTipo() == "Correctivo")  totalCorrectivos++;
-        else if (estrategia->getTipo() == "Preventivo")  totalPreventivos++;
-        else                                              totalPredictivos++;
-
+        if (estrategia->getTipo() == "Correctivo") {
+            totalCorrectivos++;
+        } else if (estrategia->getTipo() == "Preventivo") {
+            totalPreventivos++;
+        } else {
+            totalPredictivos++;
+        }
         lineaAsignados += equipos[i].getID() + " [" + estrategia->getTipo() + "]";
         if (i < atendidos - 1) lineaAsignados += ", ";
         estrategia->aplicar(&equipos[i]);
     }
     escribir(lineaAsignados + "\n");
 
-    // AGREGADO (Paso 8): lista los siguientes 5 equipos en cola con mayor prioridad
-    int equiposAMostrar = (5 < totalEquipos - atendidos) ? 5 : (totalEquipos - atendidos);
+    // Mostrar los siguientes 5 equipos en espera
+    int mostrar = (5 < total - atendidos) ? 5 : (total - atendidos);
     string lineaPendientes = "Pendientes: ";
-    for (int i = atendidos; i < atendidos + equiposAMostrar; i++) {
-        lineaPendientes += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 3) + ")";
-        if (i < atendidos + equiposAMostrar - 1) lineaPendientes += ", ";
+    for (int i = atendidos; i < atendidos + mostrar; i++) {
+        lineaPendientes += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 2) + ")";
+        if (i < atendidos + mostrar - 1) lineaPendientes += ", ";
     }
     escribir(lineaPendientes + "\n");
 
-    // MODIFICADO (Paso 8): backlog real = equipos con incidencias activas o estado < 50
-    int equiposEnBacklog           = 0;
-    double sumaEstado              = 0;
-    double sumaPrioridad           = 0;
-    int totalIncidenciasActivas    = 0;
-    for (int i = 0; i < totalEquipos; i++) {
+    // Calcular estadisticas del dia
+    int backlog             = 0;
+    double sumaEstado       = 0;
+    double sumaPrioridad    = 0;
+    int incidenciasActivas  = 0;
+    for (int i = 0; i < total; i++) {
         if (!equipos[i].getIncidencias().empty() || equipos[i].getEstado() < 50.0) {
-            equiposEnBacklog++;
+            backlog++;
         }
-        sumaPrioridad           += equipos[i].getPrioridad();
-        sumaEstado              += equipos[i].getEstado();
-        totalIncidenciasActivas += (int)equipos[i].getIncidencias().size();
+        sumaPrioridad      += equipos[i].getPrioridad();
+        sumaEstado         += equipos[i].getEstado();
+        incidenciasActivas += (int)equipos[i].getIncidencias().size();
     }
-    escribir("Backlog: " + to_string(equiposEnBacklog) + " equipos requieren atencion\n");
+    escribir("Backlog: " + to_string(backlog) + " equipos requieren atencion\n");
 
-    // Riesgo global basado en prioridad promedio
-    double riesgoPromedio = sumaPrioridad / totalEquipos;
-    sumaRiesgoGlobal += riesgoPromedio; // AGREGADO (Paso 8): acumula para promedio final
+    double riesgoPromedio = sumaPrioridad / total;
+    sumaRiesgoGlobal += riesgoPromedio;
 
     string nivelRiesgo;
-    if      (riesgoPromedio >= 8) nivelRiesgo = "ALTO";
-    else if (riesgoPromedio >= 5) nivelRiesgo = "MEDIO";
-    else                          nivelRiesgo = "BAJO";
-
+    if (riesgoPromedio >= 8) {
+        nivelRiesgo = "ALTO";
+    } else if (riesgoPromedio >= 5) {
+        nivelRiesgo = "MEDIO";
+    } else {
+        nivelRiesgo = "BAJO";
+    }
     escribir("Riesgo global: " + nivelRiesgo + "\n");
 
-    // AGREGADO (Paso 8): estado general del laboratorio ese día
-    string estadoGeneral = "Estado promedio: " + formatearDouble(sumaEstado / totalEquipos, 1) +
-                           " | Prioridad promedio: " + formatearDouble(sumaPrioridad / totalEquipos, 2) +
-                           " | Incidencias activas: " + to_string(totalIncidenciasActivas) + "\n";
-    escribir(estadoGeneral);
+    string linea = "Estado promedio: " + formatearDouble(sumaEstado / total, 1) +
+                   " | Prioridad promedio: " + formatearDouble(sumaPrioridad / total, 2) +
+                   " | Incidencias activas: " + to_string(incidenciasActivas) + "\n";
+    escribir(linea);
 }
 
-// ── Reporte final ─────────────────────────────────────────────────────────────
+// ----- Reporte final con estadisticas de los 30 dias -----
 
 void Sistema::generarReporte() {
-    // MODIFICADO (Paso 8): reporte final expandido con métricas acumuladas de los 30 días
     escribir("\nREPORTE FINAL - Simulacion de " + to_string(diaActual) + " dias\n");
     escribir("========================================\n");
 
-    // Equipo más y menos atendido durante la simulación
-    int indiceMasAtendido   = 0;
-    int indiceMenosAtendido = 0;
+    int iMas   = 0;
+    int iMenos = 0;
     for (int i = 1; i < (int)equipos.size(); i++) {
-        if (equipos[i].getContadorMantenimientos() > equipos[indiceMasAtendido].getContadorMantenimientos())
-            indiceMasAtendido = i;
-        if (equipos[i].getContadorMantenimientos() < equipos[indiceMenosAtendido].getContadorMantenimientos())
-            indiceMenosAtendido = i;
+        if (equipos[i].getContadorMantenimientos() > equipos[iMas].getContadorMantenimientos())
+            iMas = i;
+        if (equipos[i].getContadorMantenimientos() < equipos[iMenos].getContadorMantenimientos())
+            iMenos = i;
     }
 
     string resumen =
-        "Mantenimientos — Correctivo: " + to_string(totalCorrectivos) +
+        "Mantenimientos - Correctivo: " + to_string(totalCorrectivos) +
         " | Preventivo: "               + to_string(totalPreventivos) +
         " | Predictivo: "               + to_string(totalPredictivos) + "\n" +
-        "Equipo mas atendido:   "       + equipos[indiceMasAtendido].getID() +
-        " (" + to_string(equipos[indiceMasAtendido].getContadorMantenimientos())   + " veces)\n" +
-        "Equipo menos atendido: "       + equipos[indiceMenosAtendido].getID() +
-        " (" + to_string(equipos[indiceMenosAtendido].getContadorMantenimientos()) + " veces)\n" +
+        "Equipo mas atendido:   "       + equipos[iMas].getID() +
+        " (" + to_string(equipos[iMas].getContadorMantenimientos())   + " veces)\n" +
+        "Equipo menos atendido: "       + equipos[iMenos].getID() +
+        " (" + to_string(equipos[iMenos].getContadorMantenimientos()) + " veces)\n" +
         "Total incidencias generadas: " + to_string(totalIncidenciasGeneradas) + "\n" +
         "Riesgo global promedio 30 dias: " + formatearDouble(sumaRiesgoGlobal / diaActual, 2) + "\n" +
         "========================================\n";
     escribir(resumen);
 
-    // Estado final de cada equipo — solo va al archivo para no saturar la consola
-    ofstream archivoReporte("reporte_simulacion.txt");
-    if (archivoReporte.is_open()) {
-        archivoReporte << "REPORTE FINAL - Simulacion de " << diaActual << " dias\n";
-        archivoReporte << resumen;
-        archivoReporte << "\nEstado final de cada equipo:\n";
+    // Guardar estado final de cada equipo en archivo
+    ofstream reporte("reporte_simulacion.txt");
+    if (reporte.is_open()) {
+        reporte << "REPORTE FINAL - Simulacion de " << diaActual << " dias\n";
+        reporte << resumen;
+        reporte << "\nEstado final de cada equipo:\n";
         for (int i = 0; i < (int)equipos.size(); i++) {
-            equipos[i].calcularPrioridad(); // MODIFICADO (Paso 11): recalcula post-mantenimiento
-            archivoReporte << "ID: "               << equipos[i].getID()                     << "\n";
-            archivoReporte << "Estado: "           << equipos[i].getEstado()                 << "\n";
-            archivoReporte << "Criticidad: "       << equipos[i].getCriticidad()             << "\n";
-            archivoReporte << "Tiempo inactivo: "  << equipos[i].getTiempoInactivo()         << " dias\n";
-            archivoReporte << "Prioridad: "        << equipos[i].getPrioridad()              << "\n";
-            archivoReporte << "Mantenimientos: "   << equipos[i].getContadorMantenimientos() << "\n";
-            archivoReporte << "----------------------------\n";
+            equipos[i].calcularPrioridad();
+            reporte << "ID: "              << equipos[i].getID()                     << "\n";
+            reporte << "Estado: "          << equipos[i].getEstado()                 << "\n";
+            reporte << "Criticidad: "      << equipos[i].getCriticidad()             << "\n";
+            reporte << "Tiempo inactivo: " << equipos[i].getTiempoInactivo()         << " dias\n";
+            reporte << "Prioridad: "       << equipos[i].getPrioridad()              << "\n";
+            reporte << "Mantenimientos: "  << equipos[i].getContadorMantenimientos() << "\n";
+            reporte << "----------------------------\n";
         }
-        archivoReporte.close();
+        reporte.close();
         cout << "Reporte final guardado en reporte_simulacion.txt" << endl;
     }
     cout << "Log diario guardado en simulacion_diaria.txt" << endl;

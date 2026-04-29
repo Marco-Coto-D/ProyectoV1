@@ -2,13 +2,15 @@
 #define PROYECTOV1_MANTENIMIENTO_H
 #include "Equipo.h"
 #include <string>
+#include <iostream>
+using namespace std;
 
 
 class Mantenimiento {
 public:
-    virtual ~Mantenimiento() = default;
+    virtual ~Mantenimiento() {}
     virtual void aplicar(Equipo* equipo) = 0;
-    virtual std::string getTipo() const = 0;
+    virtual string getTipo() const = 0;
 };
 
 #endif //PROYECTOV1_MANTENIMIENTO_H

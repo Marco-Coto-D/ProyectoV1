@@ -1,4 +1,6 @@
 #include "IncidenciaMedia.h"
+#include <iostream>
+using namespace std;
 
 IncidenciaMedia::IncidenciaMedia(){
 }

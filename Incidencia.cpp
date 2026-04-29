@@ -3,3 +3,6 @@
 //
 
 #include "Incidencia.h"
+#include "Equipo.h"
+#include <iostream>
+using namespace std;

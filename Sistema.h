@@ -23,38 +23,35 @@ private:
     int diaActual;
     ofstream logDiario;
 
+    // Tres estrategias de mantenimiento (patron Strategy)
     MantenimientoCorrectivo correctivo;
     MantenimientoPreventivo preventivo;
     MantenimientoPredictivo predictivo;
 
-    // AGREGADO (Paso 7): incidencias del archivo esperando su día de activación
+    // Incidencias del archivo que esperan su dia de activacion
     vector<IncidenciaPendiente> incidenciasPendientes;
 
-    // AGREGADO (Paso 4): índice de posiciones ordenado por ID para búsqueda binaria
+    // Indice ordenado por ID para busqueda binaria
     vector<int> equiposOrdenadosPorId;
 
-    // AGREGADO (Paso 8): estadísticas acumuladas del reporte final
+    // Estadisticas acumuladas para el reporte final
     int totalCorrectivos;
     int totalPreventivos;
     int totalPredictivos;
     int totalIncidenciasGeneradas;
-    double sumaRiesgoGlobal; // acumula el riesgo promedio diario para calcular promedio final
+    double sumaRiesgoGlobal;
 
-    // AGREGADO (Paso 4): búsqueda binaria O(log n) sobre equiposOrdenadosPorId
-    int buscarEquipoBinaria(const string& id) const;
-
-    // AGREGADO (Paso 2/3): selecciona la estrategia según el estado del equipo (usa dynamic_cast internamente)
+    int buscarEquipo(string id);
+    void ordenarIndice();
     Mantenimiento* seleccionarEstrategia(Equipo& equipo);
-
-    // helper: escribe en consola y en el archivo de log simultáneamente
-    void escribir(const string& texto);
+    void escribir(string texto);
 
 public:
     Sistema();
     void simular();
     void simularDia();
     void generarIncidencias();
-    void aplicarIncidenciasPendientes(); // AGREGADO (Paso 7): aplica las INC cuyo día llegó
+    void aplicarIncidenciasPendientes();
     void ordenarEquipos();
     void aplicarMantenimientos();
     void generarReporte();

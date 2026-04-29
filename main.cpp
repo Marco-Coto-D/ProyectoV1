@@ -5,10 +5,10 @@ using namespace std;
 
 int main() {
     srand(time(nullptr));
-    try { // AGREGADO (Paso 1): captura excepciones personalizadas lanzadas por Sistema
+    try {
         Sistema sistema;
         sistema.simular();
-    } catch (const exception& e) { // AGREGADO (Paso 1): imprime el error y termina con código 1
+    } catch (const exception& e) {
         cerr << "Error fatal: " << e.what() << endl;
         return 1;
     }

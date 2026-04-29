@@ -3,6 +3,8 @@
 //
 
 #include "IncidenciaBaja.h"
+#include <iostream>
+using namespace std;
 
 IncidenciaBaja::IncidenciaBaja(){
 }

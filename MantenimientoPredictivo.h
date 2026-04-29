@@ -1,6 +1,8 @@
 #ifndef PROYECTOV1_MANTENIMIENTOPREDICTIVO_H
 #define PROYECTOV1_MANTENIMIENTOPREDICTIVO_H
 #include "Mantenimiento.h"
+#include <iostream>
+using namespace std;
 
 
 class MantenimientoPredictivo : public Mantenimiento {

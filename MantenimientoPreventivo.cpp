@@ -1,4 +1,6 @@
 #include "MantenimientoPreventivo.h"
+#include <iostream>
+using namespace std;
 
 void MantenimientoPreventivo::aplicar(Equipo* equipo) {
     double nuevoEstado = equipo->getEstado() + 30.0;

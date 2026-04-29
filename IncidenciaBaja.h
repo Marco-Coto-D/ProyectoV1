@@ -5,6 +5,8 @@
 #ifndef PROYECTOV1_INCIDENCIABAJA_H
 #define PROYECTOV1_INCIDENCIABAJA_H
 #include "Incidencia.h"
+#include <iostream>
+using namespace std;
 
 
 class IncidenciaBaja : public Incidencia {
