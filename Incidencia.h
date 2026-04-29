@@ -7,18 +7,18 @@
 #include <iostream>
 using namespace std;
 
-class Equipo; // forward declaration — dependencia mutua con Equipo (§8.3)
+class Equipo;
 
 class Incidencia {
 protected:
-    Equipo* equipoOwner; // puntero de vuelta al equipo que contiene esta incidencia
+    Equipo* equipoOwner;
 public:
     Incidencia() { equipoOwner = nullptr; }
     virtual int getGravedad() const = 0;
     virtual string getTipo() const = 0;
     virtual ~Incidencia() {}
-    void setEquipo(Equipo* e) { equipoOwner = e; }
-    Equipo* getEquipo() const { return equipoOwner; }
+    void setEquipo(Equipo* e) { equipoOwner = e; } //.cpp
+    Equipo* getEquipo() const { return equipoOwner; } //.cpp
 };
 
 

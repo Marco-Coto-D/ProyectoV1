@@ -94,15 +94,14 @@ void Equipo::degradar() {
     tiempoInactivo++;
 }
 
-// Fórmula de prioridad obligatoria (RF4):
-// prioridad = (criticidad * 0.5) + (incidencias_activas * 0.3) + (tiempo_inactivo * 0.2)
+
 double Equipo::calcularPrioridad() {
     double incActivas = (double)incidencias.size();
     return prioridad = (criticidad * 0.5) + (incActivas * 0.3) + (tiempoInactivo * 0.2);
 }
 
 void Equipo::agregarIncidencia(Incidencia* inc) {
-    inc->setEquipo(this); // dependencia mutua: la incidencia conoce su equipo
+    inc->setEquipo(this);
     incidencias.push_back(inc);
 }
 
@@ -121,7 +120,6 @@ void Equipo::limpiarIncidencias() {
     incidencias.clear();
 }
 
-// Elimina solo incidencias graves (gravedad >= 3: ALTA=5, MEDIA=3). Conserva las BAJA=1.
 void Equipo::limpiarIncidenciasGraves() {
     vector<Incidencia*> restantes;
     for (size_t i = 0; i < incidencias.size(); i++) {

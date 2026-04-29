@@ -4,7 +4,7 @@
 #include <vector>
 using namespace std;
 
-class Incidencia; // forward declaration — dependencia mutua con Incidencia (§8.3)
+class Incidencia;
 
 class Equipo {
 private:
@@ -19,10 +19,7 @@ private:
 public:
     Equipo(string nombre, string ID, int criticidad);
     ~Equipo();
-
-    // Intercambia todos los campos con otro equipo (usado por QuickSort para evitar copias)
     void swap(Equipo& other);
-
     string getID() const;
     double getEstado();
     int getCriticidad();
@@ -30,12 +27,10 @@ public:
     double getPrioridad();
     int getContadorMantenimientos();
     const vector<Incidencia*>& getIncidencias();
-
     void setEstado(double estado);
     void setCriticidad(int criticidad);
     void setTiempoInactivo(int tiempoInactivo);
     void setPrioridad(double prioridad);
-
     void degradar();
     double calcularPrioridad();
     void agregarIncidencia(Incidencia* inc);
