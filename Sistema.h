@@ -41,10 +41,13 @@ private:
     int totalIncidenciasGeneradas;
     double sumaRiesgoGlobal;
 
+    void abrirArchivo();
+    void separarObjetos(string linea, int numLinea);
+    void construirIndice();
     int buscarEquipo(string id);
-    void ordenarIndice();
+    void ordenarPorId();
     Mantenimiento* seleccionarEstrategia(Equipo& equipo);
-    void escribir(string texto);
+    void guardarEnLog(string texto);
 
 public:
     Sistema();

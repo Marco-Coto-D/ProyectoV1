@@ -5,70 +5,28 @@
 #include "Excepciones.h"
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 using namespace std;
-
-// Convierte un numero decimal a texto con 1 o 2 decimales.
-// snprintf escribe el numero formateado en un arreglo de chars,
-// luego string(buffer) lo convierte a string para poder concatenarlo.
-string formatearDouble(double valor, int decimales) {
-    char buffer[50];
-    if (decimales == 1) {
-        snprintf(buffer, sizeof(buffer), "%.1f", valor);
-    } else {
-        snprintf(buffer, sizeof(buffer), "%.2f", valor);
-    }
-    return string(buffer);
-}
 
 // ----- QuickSort para ordenar equipos de mayor a menor prioridad -----
 
-void intercambiar(vector<Equipo>& lista, int a, int b) {
-    lista[a].swap(lista[b]);
-}
-
-int particion(vector<Equipo>& lista, int izq, int der) {
-    double pivote = lista[der].getPrioridad();
-    int menor = izq - 1;
-    for (int i = izq; i < der; i++) {
-        if (lista[i].getPrioridad() >= pivote) {
-            menor++;
-            intercambiar(lista, menor, i);
-        }
-    }
-    intercambiar(lista, menor + 1, der);
-    return menor + 1;
-}
-
 void quickSort(vector<Equipo>& lista, int izq, int der) {
     if (izq >= der) return;
-    int p = particion(lista, izq, der);
+    double medio = lista[der].getPrioridad();
+    int menor = izq - 1;
+    for (int i = izq; i < der; i++) {
+        if (lista[i].getPrioridad() >= medio) {
+            menor++;
+            lista[menor].swap(lista[i]);
+        }
+    }
+    lista[menor + 1].swap(lista[der]);
+    int p = menor + 1;
     quickSort(lista, izq, p - 1);
     quickSort(lista, p + 1, der);
 }
 
 // ----- Funciones para leer el archivo equipos.txt -----
-
-// Retorna el campo numero N de una linea separada por ";"
-string getCampo(string linea, int campo) {
-    int inicio = 0, c = 0;
-    for (int i = 0; i <= (int)linea.size(); i++) {
-        if (i == (int)linea.size() || linea[i] == ';') {
-            if (c == campo) {
-                string res = linea.substr(inicio, i - inicio);
-                // quitar espacios al inicio
-                int ini = 0;
-                while (ini < (int)res.size() && res[ini] == ' ') ini++;
-                // quitar espacios al final
-                int fin = (int)res.size() - 1;
-                while (fin > ini && res[fin] == ' ') fin--;
-                return res.substr(ini, fin - ini + 1);
-            }
-            c++;
-            inicio = i + 1;
-        }
-    }
-    return "";
-}
 
 // Retorna el valor despues del "=" en un campo del tipo "clave=valor"
 string getValor(string campo) {
@@ -80,10 +38,7 @@ string getValor(string campo) {
     return "";
 }
 
-// ----- Escribe en pantalla y en el archivo de log al mismo tiempo -----
-
-void Sistema::escribir(string texto) {
-    cout << texto;
+void Sistema::guardarEnLog(string texto) {
     if (logDiario.is_open()) logDiario << texto;
 }
 
@@ -97,80 +52,99 @@ Sistema::Sistema() {
     totalIncidenciasGeneradas = 0;
     sumaRiesgoGlobal = 0.0;
 
+    abrirArchivo();
+    construirIndice();
+}
+
+void Sistema::abrirArchivo() {
     ifstream archivo("equipos.txt");
-    if (!archivo.is_open()) {
-        archivo.open("../equipos.txt");
-    }
-    if (!archivo.is_open()) {
-        throw ArchivoInvalidoException("equipos.txt no encontrado");
-    }
+    if (!archivo.is_open()) archivo.open("../equipos.txt");
+    if (!archivo.is_open()) throw ArchivoInvalidoException("equipos.txt no encontrado");
 
     string linea;
     int numLinea = 0;
     while (getline(archivo, linea)) {
         numLinea++;
         if (linea.empty()) continue;
-
-        string primero = getCampo(linea, 0);
-
-        if (primero == "INC") {
-            string idEquipo  = getCampo(linea, 1);
-            string severidad = getValor(getCampo(linea, 2));
-            string diaTexto  = getValor(getCampo(linea, 3));
-
-            if (idEquipo.empty() || severidad.empty() || diaTexto.empty()) {
-                throw FormatoInvalidoException("linea " + to_string(numLinea) + " INC incompleta: " + linea);
-            }
-
-            int dia = 0;
-            try {
-                dia = stoi(diaTexto);
-            } catch (...) {
-                throw FormatoInvalidoException("linea " + to_string(numLinea) + " dia no es numero: " + diaTexto);
-            }
-
-            IncidenciaPendiente p;
-            p.idEquipo      = idEquipo;
-            p.severidad     = severidad;
-            p.diaActivacion = dia;
-            incidenciasPendientes.push_back(p);
-
-        } else {
-            string id          = primero;
-            string campoCrit   = getCampo(linea, 1);
-            string campoEstado = getCampo(linea, 2);
-
-            if (id.empty() || campoCrit.empty() || campoEstado.empty()) {
-                throw FormatoInvalidoException("linea " + to_string(numLinea) + " equipo incompleto: " + linea);
-            }
-
-            int    criticidad = 0;
-            double estado     = 0;
-            try {
-                criticidad = stoi(getValor(campoCrit));
-                estado     = stod(getValor(campoEstado));
-            } catch (...) {
-                throw FormatoInvalidoException("linea " + to_string(numLinea) + " valor no numerico: " + linea);
-            }
-
-            Equipo eq(id, id, criticidad);
-            eq.setEstado(estado);
-            equipos.push_back(eq);
-        }
+        separarObjetos(linea, numLinea);
     }
     archivo.close();
     cout << equipos.size() << " equipos cargados." << endl;
+}
 
-    // Construir indice de posiciones para la busqueda binaria
+void Sistema::separarObjetos(string linea, int numLinea) {
+    vector<string> campos;
+    int inicio = 0;
+    for (int i = 0; i <= (int)linea.size(); i++) {
+        if (i == (int)linea.size() || linea[i] == ';') {
+            string c = linea.substr(inicio, i - inicio);
+            int ini = 0;
+            while (ini < (int)c.size() && c[ini] == ' ') ini++;
+            int fin = (int)c.size() - 1;
+            while (fin > ini && c[fin] == ' ') fin--;
+            campos.push_back(c.substr(ini, fin - ini + 1));
+            inicio = i + 1;
+        }
+    }
+
+    string primero = campos.empty() ? "" : campos[0];
+
+    if (primero == "INC") {
+        string idEquipo  = campos.size() > 1 ? campos[1] : "";
+        string severidad = getValor(campos.size() > 2 ? campos[2] : "");
+        string diaTexto  = getValor(campos.size() > 3 ? campos[3] : "");
+
+        if (idEquipo.empty() || severidad.empty() || diaTexto.empty()) {
+            throw FormatoInvalidoException("linea " + to_string(numLinea) + " INC incompleta: " + linea);
+        }
+
+        int dia = 0;
+        try {
+            dia = stoi(diaTexto);
+        } catch (...) {
+            throw FormatoInvalidoException("linea " + to_string(numLinea) + " dia no es numero: " + diaTexto);
+        }
+
+        IncidenciaPendiente p;
+        p.idEquipo      = idEquipo;
+        p.severidad     = severidad;
+        p.diaActivacion = dia;
+        incidenciasPendientes.push_back(p);
+
+    } else {
+        string id          = primero;
+        string campoCrit   = campos.size() > 1 ? campos[1] : "";
+        string campoEstado = campos.size() > 2 ? campos[2] : "";
+
+        if (id.empty() || campoCrit.empty() || campoEstado.empty()) {
+            throw FormatoInvalidoException("linea " + to_string(numLinea) + " equipo incompleto: " + linea);
+        }
+
+        int    criticidad = 0;
+        double estado     = 0;
+        try {
+            criticidad = stoi(getValor(campoCrit));
+            estado     = stod(getValor(campoEstado));
+        } catch (...) {
+            throw FormatoInvalidoException("linea " + to_string(numLinea) + " valor no numerico: " + linea);
+        }
+
+        Equipo eq(id, id, criticidad);
+        eq.setEstado(estado);
+        equipos.push_back(eq);
+    }
+}
+
+void Sistema::construirIndice() {
     for (int i = 0; i < (int)equipos.size(); i++) {
         equiposOrdenadosPorId.push_back(i);
     }
-    ordenarIndice();
+    ordenarPorId();
 }
 
 // ----- Ordena el indice de IDs con bubble sort -----
 
-void Sistema::ordenarIndice() {
+void Sistema::ordenarPorId() {
     int n = (int)equiposOrdenadosPorId.size();
     for (int i = 0; i < n - 1; i++) {
         for (int j = 0; j < n - 1 - i; j++) {
@@ -224,8 +198,14 @@ void Sistema::simular() {
     if (!logDiario.is_open()) {
         cout << "Advertencia: no se pudo crear simulacion_diaria.txt" << endl;
     }
+    cout << fixed << setprecision(3);
+    if (logDiario.is_open()) logDiario << fixed << setprecision(3);
     for (int i = 0; i < 30; i++) {
         simularDia();
+        if (i < 29) {
+            cout << "\nPresiona Enter para avanzar al dia " << diaActual + 1 << "...\n";
+            cin.get();
+        }
     }
     if (logDiario.is_open()) logDiario.close();
     generarReporte();
@@ -234,7 +214,8 @@ void Sistema::simular() {
 void Sistema::simularDia() {
     int dia = diaActual + 1;
 
-    escribir("\nDia " + to_string(dia) + "\n");
+    cout << "\nDia " << dia << "\n";
+    guardarEnLog("\nDia " + to_string(dia) + "\n");
 
     // Paso 1: todos los equipos se degradan
     for (int i = 0; i < (int)equipos.size(); i++) {
@@ -255,12 +236,15 @@ void Sistema::simularDia() {
 
     // Mostrar los 3 equipos mas urgentes
     int top = 3 < (int)equipos.size() ? 3 : (int)equipos.size();
-    string lineaTop = "Top prioridad: ";
+    cout << "Top prioridad: ";
+    guardarEnLog("Top prioridad: ");
     for (int i = 0; i < top; i++) {
-        lineaTop += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 2) + ")";
-        if (i < top - 1) lineaTop += ", ";
+        cout << equipos[i].getID() << " (" << equipos[i].getPrioridad() << ")";
+        if (logDiario.is_open()) logDiario << equipos[i].getID() << " (" << equipos[i].getPrioridad() << ")";
+        if (i < top - 1) { cout << ", "; guardarEnLog(", "); }
     }
-    escribir(lineaTop + "\n");
+    cout << "\n";
+    guardarEnLog("\n");
 
     // Pasos 5-8: seleccion, mantenimiento, actualizacion global y registro
     aplicarMantenimientos();
@@ -272,14 +256,14 @@ void Sistema::simularDia() {
 void Sistema::aplicarIncidenciasPendientes() {
     // Reconstruir el indice porque el quickSort reordeno el vector
     for (int i = 0; i < (int)equipos.size(); i++) equiposOrdenadosPorId[i] = i;
-    ordenarIndice();
+    ordenarPorId();
 
     for (int i = 0; i < (int)incidenciasPendientes.size(); i++) {
         IncidenciaPendiente& p = incidenciasPendientes[i];
         if (p.diaActivacion != diaActual + 1) continue;
 
-        int indice = buscarEquipo(p.idEquipo);
-        if (indice == -1) {
+        int posicion = buscarEquipo(p.idEquipo);
+        if (posicion == -1) {
             throw OperacionInconsistenteException("INC referencia equipo inexistente: " + p.idEquipo);
         }
 
@@ -291,9 +275,9 @@ void Sistema::aplicarIncidenciasPendientes() {
         } else {
             nueva = new IncidenciaBaja();
         }
-        equipos[indice].agregarIncidencia(nueva);
-        // dependencia mutua: la incidencia sabe a que equipo pertenece
-        escribir("  INC " + nueva->getTipo() + " activada en " + nueva->getEquipo()->getID() + "\n");
+        equipos[posicion].agregarIncidencia(nueva);
+        cout << "  ocurrio una INC " << nueva->getTipo() << " en " << nueva->getEquipo()->getID() << "\n";
+        guardarEnLog("  ocurrio una INC " + nueva->getTipo() + " en " + nueva->getEquipo()->getID() + "\n");
     }
 }
 
@@ -339,16 +323,20 @@ void Sistema::aplicarMantenimientos() {
         if (i < atendidos - 1) lineaAsignados += ", ";
         estrategia->aplicar(&equipos[i]);
     }
-    escribir(lineaAsignados + "\n");
+    cout << lineaAsignados << "\n";
+    guardarEnLog(lineaAsignados + "\n");
 
     // Mostrar los siguientes 5 equipos en espera
     int mostrar = (5 < total - atendidos) ? 5 : (total - atendidos);
-    string lineaPendientes = "Pendientes: ";
+    cout << "Pendientes: ";
+    guardarEnLog("Pendientes: ");
     for (int i = atendidos; i < atendidos + mostrar; i++) {
-        lineaPendientes += equipos[i].getID() + " (" + formatearDouble(equipos[i].getPrioridad(), 2) + ")";
-        if (i < atendidos + mostrar - 1) lineaPendientes += ", ";
+        cout << equipos[i].getID() << " (" << equipos[i].getPrioridad() << ")";
+        if (logDiario.is_open()) logDiario << equipos[i].getID() << " (" << equipos[i].getPrioridad() << ")";
+        if (i < atendidos + mostrar - 1) { cout << ", "; guardarEnLog(", "); }
     }
-    escribir(lineaPendientes + "\n");
+    cout << "\n";
+    guardarEnLog("\n");
 
     // Calcular estadisticas del dia
     int backlog             = 0;
@@ -363,7 +351,8 @@ void Sistema::aplicarMantenimientos() {
         sumaEstado         += equipos[i].getEstado();
         incidenciasActivas += (int)equipos[i].getIncidencias().size();
     }
-    escribir("Backlog: " + to_string(backlog) + " equipos requieren atencion\n");
+    cout << "Backlog: " << backlog << " equipos requieren atencion\n";
+    guardarEnLog("Backlog: " + to_string(backlog) + " equipos requieren atencion\n");
 
     double riesgoPromedio = sumaPrioridad / total;
     sumaRiesgoGlobal += riesgoPromedio;
@@ -376,19 +365,25 @@ void Sistema::aplicarMantenimientos() {
     } else {
         nivelRiesgo = "BAJO";
     }
-    escribir("Riesgo global: " + nivelRiesgo + "\n");
+    cout << "Riesgo global: " << nivelRiesgo << "\n";
+    guardarEnLog("Riesgo global: " + nivelRiesgo + "\n");
 
-    string linea = "Estado promedio: " + formatearDouble(sumaEstado / total, 1) +
-                   " | Prioridad promedio: " + formatearDouble(sumaPrioridad / total, 2) +
-                   " | Incidencias activas: " + to_string(incidenciasActivas) + "\n";
-    escribir(linea);
+    cout << "Estado promedio: " << sumaEstado / total
+         << " | Prioridad promedio: " << sumaPrioridad / total
+         << " | Incidencias activas: " << incidenciasActivas << "\n";
+    if (logDiario.is_open())
+        logDiario << "Estado promedio: " << sumaEstado / total
+                  << " | Prioridad promedio: " << sumaPrioridad / total
+                  << " | Incidencias activas: " << incidenciasActivas << "\n";
 }
 
 // ----- Reporte final con estadisticas de los 30 dias -----
 
 void Sistema::generarReporte() {
-    escribir("\nREPORTE FINAL - Simulacion de " + to_string(diaActual) + " dias\n");
-    escribir("========================================\n");
+    cout << "\nREPORTE FINAL - Simulacion de " << diaActual << " dias\n";
+    guardarEnLog("\nREPORTE FINAL - Simulacion de " + to_string(diaActual) + " dias\n");
+    cout << "========================================\n";
+    guardarEnLog("========================================\n");
 
     int iMas   = 0;
     int iMenos = 0;
@@ -407,16 +402,19 @@ void Sistema::generarReporte() {
         " (" + to_string(equipos[iMas].getContadorMantenimientos())   + " veces)\n" +
         "Equipo menos atendido: "       + equipos[iMenos].getID() +
         " (" + to_string(equipos[iMenos].getContadorMantenimientos()) + " veces)\n" +
-        "Total incidencias generadas: " + to_string(totalIncidenciasGeneradas) + "\n" +
-        "Riesgo global promedio 30 dias: " + formatearDouble(sumaRiesgoGlobal / diaActual, 2) + "\n" +
-        "========================================\n";
-    escribir(resumen);
+        "Total incidencias generadas: " + to_string(totalIncidenciasGeneradas) + "\n";
+    cout << resumen;
+    cout << "Riesgo global promedio 30 dias: " << sumaRiesgoGlobal / diaActual << "\n";
+    cout << "========================================\n";
 
     // Guardar estado final de cada equipo en archivo
     ofstream reporte("reporte_simulacion.txt");
     if (reporte.is_open()) {
+        reporte << fixed << setprecision(3);
         reporte << "REPORTE FINAL - Simulacion de " << diaActual << " dias\n";
         reporte << resumen;
+        reporte << "Riesgo global promedio 30 dias: " << sumaRiesgoGlobal / diaActual << "\n";
+        reporte << "========================================\n";
         reporte << "\nEstado final de cada equipo:\n";
         for (int i = 0; i < (int)equipos.size(); i++) {
             equipos[i].calcularPrioridad();
