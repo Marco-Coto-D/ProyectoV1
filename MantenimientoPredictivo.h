@@ -8,7 +8,7 @@ using namespace std;
 class MantenimientoPredictivo : public Mantenimiento {
 public:
     void aplicar(Equipo* equipo) override;
-    string getTipo() const override { //.cpp
+    string getTipo() const override {
         return "Predictivo";
     }
 };

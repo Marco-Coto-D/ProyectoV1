@@ -112,19 +112,19 @@ void Sistema::separarObjetos(string linea, int numLinea) {
         incidenciasPendientes.push_back(p);
 
     } else {
-        string id          = primero;
-        string campoCrit   = campos.size() > 1 ? campos[1] : "";
+        string id= primero;
+        string campoCrit = campos.size() > 1 ? campos[1] : "";
         string campoEstado = campos.size() > 2 ? campos[2] : "";
 
         if (id.empty() || campoCrit.empty() || campoEstado.empty()) {
             throw FormatoInvalidoException("linea " + to_string(numLinea) + " equipo incompleto: " + linea);
         }
 
-        int    criticidad = 0;
-        double estado     = 0;
+        int criticidad = 0;
+        double estado  = 0;
         try {
             criticidad = stoi(getValor(campoCrit));
-            estado     = stod(getValor(campoEstado));
+            estado  = stod(getValor(campoEstado));
         } catch (...) {
             throw FormatoInvalidoException("linea " + to_string(numLinea) + " valor no numerico: " + linea);
         }
@@ -166,7 +166,7 @@ int Sistema::buscarEquipo(string id) {
         string idMed = equipos[equiposOrdenadosPorId[med]].getID();
         if (idMed == id) return equiposOrdenadosPorId[med];
         if (idMed < id) izq = med + 1;
-        else            der = med - 1;
+        else  der = med - 1;
     }
     return -1;
 }
@@ -204,7 +204,7 @@ void Sistema::simular() {
         simularDia();
         if (i < 29) {
             cout << "\nPresiona Enter para avanzar al dia " << diaActual + 1 << "...\n";
-            cin.get();
+            cin.ignore(1000, '\n');
         }
     }
     if (logDiario.is_open()) logDiario.close();
@@ -305,7 +305,7 @@ void Sistema::ordenarEquipos() {
 }
 
 void Sistema::aplicarMantenimientos() {
-    int total    = (int)equipos.size();
+    int total = (int)equipos.size();
     int atendidos = total < 3 ? total : 3;
 
     string lineaAsignados = "Asignados: ";
@@ -339,16 +339,16 @@ void Sistema::aplicarMantenimientos() {
     guardarEnLog("\n");
 
     // Calcular estadisticas del dia
-    int backlog             = 0;
-    double sumaEstado       = 0;
-    double sumaPrioridad    = 0;
-    int incidenciasActivas  = 0;
+    int backlog = 0;
+    double sumaEstado = 0;
+    double sumaPrioridad = 0;
+    int incidenciasActivas = 0;
     for (int i = 0; i < total; i++) {
         if (!equipos[i].getIncidencias().empty() || equipos[i].getEstado() < 50.0) {
             backlog++;
         }
-        sumaPrioridad      += equipos[i].getPrioridad();
-        sumaEstado         += equipos[i].getEstado();
+        sumaPrioridad += equipos[i].getPrioridad();
+        sumaEstado += equipos[i].getEstado();
         incidenciasActivas += (int)equipos[i].getIncidencias().size();
     }
     cout << "Backlog: " << backlog << " equipos requieren atencion\n";
@@ -385,7 +385,8 @@ void Sistema::generarReporte() {
     cout << "========================================\n";
     guardarEnLog("========================================\n");
 
-    int iMas   = 0;
+    int iMas
+    = 0;
     int iMenos = 0;
     for (int i = 1; i < (int)equipos.size(); i++) {
         if (equipos[i].getContadorMantenimientos() > equipos[iMas].getContadorMantenimientos())

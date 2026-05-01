@@ -17,8 +17,12 @@ public:
     virtual int getGravedad() const = 0;
     virtual string getTipo() const = 0;
     virtual ~Incidencia() {}
-    void setEquipo(Equipo* e) { equipoOwner = e; } //.cpp
-    Equipo* getEquipo() const { return equipoOwner; } //.cpp
+    void setEquipo(Equipo* e) {
+        equipoOwner = e;
+    }
+    Equipo* getEquipo() const {
+        return equipoOwner;
+    }
 };
 
 

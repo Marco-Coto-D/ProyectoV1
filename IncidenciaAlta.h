@@ -9,7 +9,7 @@ public:
     IncidenciaAlta();
     int getGravedad() const override;
     string getTipo() const override;
-    bool requiereParoInmediato() const { //.cpp
+    bool requiereParoInmediato() const {
         return true;
     }
 };

@@ -23,7 +23,7 @@ private:
     int diaActual;
     ofstream logDiario;
 
-    // Tres estrategias de mantenimiento (patron Strategy)
+    // Tres estrategias de mantenimiento
     MantenimientoCorrectivo correctivo;
     MantenimientoPreventivo preventivo;
     MantenimientoPredictivo predictivo;
