@@ -7,5 +7,6 @@ void MantenimientoPreventivo::aplicar(Equipo* equipo) {
     if (nuevoEstado > 100.0) nuevoEstado = 100.0;
     equipo->setEstado(nuevoEstado);
     equipo->setTiempoInactivo(0);
+    equipo->limpiarIncidencias();
     equipo->registrarMantenimiento();
 }

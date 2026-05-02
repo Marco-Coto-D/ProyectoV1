@@ -15,7 +15,6 @@ add_executable(ProyectoV1 main.cpp
         IncidenciaAlta.cpp
         IncidenciaAlta.h
         Excepciones.h
-        Mantenimiento.cpp
         Mantenimiento.h
         MantenimientoCorrectivo.cpp
         MantenimientoCorrectivo.h

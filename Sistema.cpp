@@ -174,18 +174,18 @@ int Sistema::buscarEquipo(string id) {
 // ----- Patron Strategy: decide que tipo de mantenimiento aplicar -----
 
 Mantenimiento* Sistema::seleccionarEstrategia(Equipo& equipo) {
-    // Downcasting seguro: verifica si hay una IncidenciaAlta con paro inmediato
+    if (equipo.getEstado() < 40.0 || equipo.gravedadIncidencias() >= 12) {
+        return &correctivo;
+    }
+    // Downcasting seguro: Alta con paro inmediato solo si el equipo esta deteriorado
     const vector<Incidencia*>& lista = equipo.getIncidencias();
     for (int i = 0; i < (int)lista.size(); i++) {
         IncidenciaAlta* alta = dynamic_cast<IncidenciaAlta*>(lista[i]);
-        if (alta != nullptr && alta->requiereParoInmediato()) {
+        if (alta != nullptr && alta->requiereParoInmediato() && equipo.getEstado() < 50.0) {
             return &correctivo;
         }
     }
-    if (equipo.getEstado() < 40.0 || equipo.gravedadIncidencias() >= 10) {
-        return &correctivo;
-    }
-    if ((int)equipo.getIncidencias().size() >= 3) {
+    if ((int)equipo.getIncidencias().size() >= 2) {
         return &predictivo;
     }
     return &preventivo;
@@ -283,7 +283,7 @@ void Sistema::aplicarIncidenciasPendientes() {
 
 void Sistema::generarIncidencias() {
     for (int i = 0; i < (int)equipos.size(); i++) {
-        if (rand() % 100 < 40) {
+        if (rand() % 100 < 15) {
             int tipo = rand() % 3;
             Incidencia* nueva = nullptr;
             if (tipo == 0) {
@@ -358,9 +358,9 @@ void Sistema::aplicarMantenimientos() {
     sumaRiesgoGlobal += riesgoPromedio;
 
     string nivelRiesgo;
-    if (riesgoPromedio >= 8) {
+    if (riesgoPromedio >= 7) {
         nivelRiesgo = "ALTO";
-    } else if (riesgoPromedio >= 5) {
+    } else if (riesgoPromedio >= 4) {
         nivelRiesgo = "MEDIO";
     } else {
         nivelRiesgo = "BAJO";
@@ -385,8 +385,7 @@ void Sistema::generarReporte() {
     cout << "========================================\n";
     guardarEnLog("========================================\n");
 
-    int iMas
-    = 0;
+    int iMas= 0;
     int iMenos = 0;
     for (int i = 1; i < (int)equipos.size(); i++) {
         if (equipos[i].getContadorMantenimientos() > equipos[iMas].getContadorMantenimientos())

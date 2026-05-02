@@ -96,8 +96,8 @@ void Equipo::degradar() {
 
 
 double Equipo::calcularPrioridad() {
-    double gravedad = (double)gravedadIncidencias();
-    return prioridad = (criticidad * 0.5) + (gravedad * 0.3) + (tiempoInactivo * 0.2);
+    double incActivas = (double)incidencias.size();
+    return prioridad = (criticidad * 0.5) + (incActivas * 0.3) + (tiempoInactivo * 0.2);
 }
 
 void Equipo::agregarIncidencia(Incidencia* inc) {
