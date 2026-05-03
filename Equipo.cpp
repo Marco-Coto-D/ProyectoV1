@@ -17,8 +17,6 @@ Equipo::~Equipo() {
     limpiarIncidencias();
 }
 
-// Intercambia todos los campos con otro equipo campo por campo.
-// El swap del vector transfiere los punteros sin copiarlos.
 void Equipo::swap(Equipo& other) {
     string tmpNombre = this->nombre;
     this->nombre = other.nombre;

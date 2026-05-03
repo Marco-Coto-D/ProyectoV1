@@ -23,18 +23,18 @@ private:
     int diaActual;
     ofstream logDiario;
 
-    // Tres estrategias de mantenimiento
+
     MantenimientoCorrectivo correctivo;
     MantenimientoPreventivo preventivo;
     MantenimientoPredictivo predictivo;
 
-    // Incidencias del archivo que esperan su dia de activacion
+
     vector<IncidenciaPendiente> incidenciasPendientes;
 
-    // Indice ordenado por ID para busqueda binaria
+
     vector<int> equiposOrdenadosPorId;
 
-    // Estadisticas acumuladas para el reporte final
+
     int totalCorrectivos;
     int totalPreventivos;
     int totalPredictivos;

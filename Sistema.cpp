@@ -8,7 +8,6 @@
 #include <iomanip>
 using namespace std;
 
-// ----- QuickSort para ordenar equipos de mayor a menor prioridad -----
 
 void quickSort(vector<Equipo>& lista, int izq, int der) {
     if (izq >= der) return;
@@ -26,9 +25,7 @@ void quickSort(vector<Equipo>& lista, int izq, int der) {
     quickSort(lista, p + 1, der);
 }
 
-// ----- Funciones para leer el archivo equipos.txt -----
 
-// Retorna el valor despues del "=" en un campo del tipo "clave=valor"
 string getValor(string campo) {
     for (int i = 0; i < (int)campo.size(); i++) {
         if (campo[i] == '=') {
@@ -42,7 +39,6 @@ void Sistema::guardarEnLog(string texto) {
     if (logDiario.is_open()) logDiario << texto;
 }
 
-// ----- Constructor: carga los equipos e incidencias desde el archivo -----
 
 Sistema::Sistema() {
     diaActual = 0;
@@ -142,7 +138,6 @@ void Sistema::construirIndice() {
     ordenarPorId();
 }
 
-// ----- Ordena el indice de IDs con bubble sort -----
 
 void Sistema::ordenarPorId() {
     int n = (int)equiposOrdenadosPorId.size();
@@ -157,7 +152,6 @@ void Sistema::ordenarPorId() {
     }
 }
 
-// ----- Busqueda binaria: busca un equipo por ID en el indice ordenado -----
 
 int Sistema::buscarEquipo(string id) {
     int izq = 0, der = (int)equiposOrdenadosPorId.size() - 1;
@@ -171,13 +165,11 @@ int Sistema::buscarEquipo(string id) {
     return -1;
 }
 
-// ----- Patron Strategy: decide que tipo de mantenimiento aplicar -----
 
 Mantenimiento* Sistema::seleccionarEstrategia(Equipo& equipo) {
     if (equipo.getEstado() < 40.0 || equipo.gravedadIncidencias() >= 12) {
         return &correctivo;
     }
-    // Downcasting seguro: Alta con paro inmediato solo si el equipo esta deteriorado
     const vector<Incidencia*>& lista = equipo.getIncidencias();
     for (int i = 0; i < (int)lista.size(); i++) {
         IncidenciaAlta* alta = dynamic_cast<IncidenciaAlta*>(lista[i]);
@@ -191,7 +183,6 @@ Mantenimiento* Sistema::seleccionarEstrategia(Equipo& equipo) {
     return &preventivo;
 }
 
-// ----- Simulacion de 30 dias -----
 
 void Sistema::simular() {
     logDiario.open("simulacion_diaria.txt");
@@ -217,24 +208,19 @@ void Sistema::simularDia() {
     cout << "\nDia " << dia << "\n";
     guardarEnLog("\nDia " + to_string(dia) + "\n");
 
-    // Paso 1: todos los equipos se degradan
     for (int i = 0; i < (int)equipos.size(); i++) {
         equipos[i].degradar();
     }
 
-    // Paso 2: se activan las incidencias del archivo y se generan incidencias aleatorias
     aplicarIncidenciasPendientes();
     generarIncidencias();
 
-    // Paso 3: se calcula la prioridad de cada equipo
     for (int i = 0; i < (int)equipos.size(); i++) {
         equipos[i].calcularPrioridad();
     }
 
-    // Paso 4: se ordenan los equipos de mayor a menor prioridad
     ordenarEquipos();
 
-    // Mostrar los 3 equipos mas urgentes
     int top = 3 < (int)equipos.size() ? 3 : (int)equipos.size();
     cout << "Top prioridad: ";
     guardarEnLog("Top prioridad: ");
@@ -246,15 +232,12 @@ void Sistema::simularDia() {
     cout << "\n";
     guardarEnLog("\n");
 
-    // Pasos 5-8: seleccion, mantenimiento, actualizacion global y registro
     aplicarMantenimientos();
 
     diaActual++;
 }
 
-// Activa las incidencias del archivo cuando llega su dia
 void Sistema::aplicarIncidenciasPendientes() {
-    // Reconstruir el indice porque el quickSort reordeno el vector
     for (int i = 0; i < (int)equipos.size(); i++) equiposOrdenadosPorId[i] = i;
     ordenarPorId();
 
@@ -326,7 +309,6 @@ void Sistema::aplicarMantenimientos() {
     cout << lineaAsignados << "\n";
     guardarEnLog(lineaAsignados + "\n");
 
-    // Mostrar los siguientes 5 equipos en espera
     int mostrar = (5 < total - atendidos) ? 5 : (total - atendidos);
     cout << "Pendientes: ";
     guardarEnLog("Pendientes: ");
@@ -338,7 +320,6 @@ void Sistema::aplicarMantenimientos() {
     cout << "\n";
     guardarEnLog("\n");
 
-    // Calcular estadisticas del dia
     int backlog = 0;
     double sumaEstado = 0;
     double sumaPrioridad = 0;
@@ -377,7 +358,6 @@ void Sistema::aplicarMantenimientos() {
                   << " | Incidencias activas: " << incidenciasActivas << "\n";
 }
 
-// ----- Reporte final con estadisticas de los 30 dias -----
 
 void Sistema::generarReporte() {
     cout << "\nREPORTE FINAL - Simulacion de " << diaActual << " dias\n";
@@ -407,7 +387,6 @@ void Sistema::generarReporte() {
     cout << "Riesgo global promedio 30 dias: " << sumaRiesgoGlobal / diaActual << "\n";
     cout << "========================================\n";
 
-    // Guardar estado final de cada equipo en archivo
     ofstream reporte("reporte_simulacion.txt");
     if (reporte.is_open()) {
         reporte << fixed << setprecision(3);
